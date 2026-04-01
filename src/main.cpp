@@ -49,7 +49,8 @@ int main()
 		text.setCharacterSize(fontSize);
 		text.setFillColor(sf::Color::White);
 		text.setString("Hello World!");
-		text.move({1.0f,1.0f});
+		text.setVelocity({ 1.0f, 1.0f });
+		text.move(text.getVelocity());
 
 		sf::Vector2f textVelocity;
 
