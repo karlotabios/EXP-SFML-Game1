@@ -12,7 +12,8 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-file(GLOB SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} text/*.cpp)
+
+file(GLOB SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
 
 foreach(SRC_FILE ${SOURCES})
     get_filename_component(FILE_NAME ${SRC_FILE} NAME_WE)
