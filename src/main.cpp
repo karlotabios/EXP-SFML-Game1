@@ -1,27 +1,26 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "text/text.h"
+#include "defaults/defaults.h"
 
-static const float FPS = 60.0f;
-static const float TIMESTEP = (1.0f / FPS);
-static const std::string FONT_DIR = "../font/Roboto/static/Roboto_Condensed-Black.ttf";
 
 int main()
 {
 	// Window objects
 	sf::RenderWindow window(sf::VideoMode( { 800, 600 } ), "SFML works!");
-	sf::CircleShape shape(100.f );
-	shape.setFillColor(sf::Color::Green);
 
-	const static std::string fontPath = FONT_DIR;
-	sf::Font font("../font/Roboto/static/Roboto_Condensed-Black.ttf");
-	sf::Text text(font);
+	// Getting font from file
+	sf::Font font(FONT_DIR);
 
-	if (!font.openFromFile(fontPath)) {
-		std::cout << "ERROR: Font not found at path " << fontPath << "\n";
+	if (!font.openFromFile(FONT_DIR)) {
+		std::cout << "ERROR: Font not found at path " << FONT_DIR << "\n";
 	}
 	else {
-		std::cout << "SUCCESS: Font found at path: " << fontPath << "\n";
+		std::cout << "SUCCESS: Font found at path: " << FONT_DIR << "\n";
 	}
+
+	// Creating text from font
+	TextEntity text(font);
 
 	// FPS time tracking
 	sf::Clock clock;
@@ -46,16 +45,16 @@ int main()
 			if (event->is<sf::Event::Closed>()) window.close();
 		}
 
-		int fontSize = 24;
+		unsigned int fontSize = 24;
 		text.setCharacterSize(fontSize);
 		text.setFillColor(sf::Color::White);
 		text.setString("Hello World!");
+		text.move({1.0f,1.0f});
+
+		sf::Vector2f textVelocity;
 
 		// Clearing old frame from display
 		window.clear();
-
-		// Drawing shapes
-		// window.draw(shape);
 
 		// Drawing text
 		window.draw(text);
