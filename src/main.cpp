@@ -8,9 +8,9 @@ static const std::string FONT_DIR = "../font/Roboto/static/Roboto_Condensed-Blac
 int main()
 {
 	// Window objects
-	sf::RenderWindow window( sf::VideoMode( { 800, 600 } ), "SFML works!" );
-	sf::CircleShape shape( 100.f );
-	shape.setFillColor( sf::Color::Green );
+	sf::RenderWindow window(sf::VideoMode( { 800, 600 } ), "SFML works!");
+	sf::CircleShape shape(100.f );
+	shape.setFillColor(sf::Color::Green);
 
 	const static std::string fontPath = FONT_DIR;
 	sf::Font font("../font/Roboto/static/Roboto_Condensed-Black.ttf");
@@ -28,7 +28,7 @@ int main()
 	sf::Time elapsedTime;
 	sf::Time iterationTime;
 
-	while ( window.isOpen() )
+	while (window.isOpen())
 	{
 		// Restarting time counter for FPS
 		elapsedTime = sf::seconds(0);
@@ -41,17 +41,26 @@ int main()
 #endif
 
 		// Checking for window events
-		while ( const std::optional event = window.pollEvent() )
+		while (const std::optional event = window.pollEvent())
 		{
-			if ( event->is<sf::Event::Closed>() )
-				window.close();
+			if (event->is<sf::Event::Closed>()) window.close();
 		}
 
-		// Clearing old rendering frame from display
+		int fontSize = 24;
+		text.setCharacterSize(fontSize);
+		text.setFillColor(sf::Color::White);
+		text.setString("Hello World!");
+
+		// Clearing old frame from display
 		window.clear();
 
-		// Drawing new rendering frame into display
-		window.draw( shape );
+		// Drawing shapes
+		// window.draw(shape);
+
+		// Drawing text
+		window.draw(text);
+
+		// Finally display drawn objects
 		window.display();
 
 		// FPS cap
