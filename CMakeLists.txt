@@ -12,14 +12,7 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-file(GLOB SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} text/*.cpp)
-
-foreach(SRC_FILE ${SOURCES})
-    get_filename_component(FILE_NAME ${SRC_FILE} NAME_WE)
-    target_link_libraries(${FILE_NAME} PRIVATE SFML::Graphics)
-endforeach()
-
-add_executable(main src/main.cpp ${SOURCES})
+add_executable(main src/main.cpp)
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)
 
