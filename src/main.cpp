@@ -52,8 +52,6 @@ int main()
 		text.setVelocity({ 1.0f, 1.0f });
 		text.move(text.getVelocity());
 
-		sf::Vector2f textVelocity;
-
 		// Clearing old frame from display
 		window.clear();
 
