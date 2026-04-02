@@ -22,5 +22,8 @@ namespace kt::Shapes {
 
 		float getMass();
 		void setMass(const float& m);
+
+		template <typename T>
+		bool contains(const sf::Vector2<T> point) const;
 	};
 }

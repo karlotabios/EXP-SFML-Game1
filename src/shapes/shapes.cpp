@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Shapes.h"
 
 namespace kt::Shapes {
@@ -27,5 +28,11 @@ namespace kt::Shapes {
 	}
 	void CircleEntity::setMass(const float& m) {
 		mass = m;
+	}
+
+	template <typename T>
+	bool CircleEntity::contains(const sf::Vector2<T> point) const {
+		// TODO: Implementation
+		return false;
 	}
 }
