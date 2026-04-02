@@ -2,9 +2,10 @@
 
 namespace kt::Shapes {
 	CircleEntity::CircleEntity() : CircleShape() {
-		CircleEntity::setRadius(30.0f);
-		CircleEntity::setFillColor(sf::Color::Red);
-		CircleEntity::setOutlineColor(sf::Color::Red);
+		setRadius(30.0f);
+		setOrigin(sf::Vector2f(getRadius(), getRadius()));
+		setFillColor(sf::Color::Red);
+		setOutlineColor(sf::Color::Red);
 	}
 
 	sf::Vector2f CircleEntity::getAcceleration() {
