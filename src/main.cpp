@@ -44,14 +44,17 @@ int main()
 	}
 
 	// Creating text from font
-	kt::Text::TextEntity text(font);
-	text.setPosition(sf::Vector2f(kt::Defaults::WINDOW_WIDTH / 2, kt::Defaults::WINDOW_HEIGHT / 2));
-	unsigned int fontSize = 44;
-	text.setCharacterSize(fontSize);
-	text.setFillColor(sf::Color::White);
-	text.setVelocity(sf::Vector2f{ 1.0f, 1.0f });
+	kt::Text::TextEntity movingText(font);
+	unsigned int fontSize = 24;
+	movingText.setPosition(sf::Vector2f(kt::Defaults::WINDOW_WIDTH / 2, kt::Defaults::WINDOW_HEIGHT / 2));
+	movingText.setCharacterSize(fontSize);
+	movingText.setFillColor(sf::Color::White);
+	movingText.setVelocity(sf::Vector2f{ 1.0f, 1.0f });
 
-	kt::Text::TextEntity cornerText = text;
+	kt::Text::TextEntity cornerText(font);
+	cornerText.setPosition(sf::Vector2f(0.0f, 0.0f));
+	cornerText.setCharacterSize(fontSize);
+	cornerText.setFillColor(sf::Color::White);
 
 	// Creating custom circle
 	kt::Shapes::CircleEntity circle;
@@ -86,9 +89,10 @@ int main()
 
 		// Set text string
 		std::string textContent;
-		sf::FloatRect boundingBox = text.getGlobalBounds();
+		sf::FloatRect boundingBox = movingText.getGlobalBounds();
 		textContent = std::to_string(boundingBox.position.x) + " " + std::to_string(boundingBox.position.y);
-		text.setString(textContent);
+		movingText.setString(textContent);
+		textContent = std::to_string(mouseLocalPosition.x) + " " + std::to_string(mouseLocalPosition.y);
 		cornerText.setString(textContent);
 
 		circle.setPosition(sf::Vector2f(boundingBox.position.x, boundingBox.position.y));
@@ -103,7 +107,7 @@ int main()
 		window.draw(circle);
 
 		// Drawing text
-		window.draw(text);
+		window.draw(movingText);
 
 		window.draw(cornerText);
 
