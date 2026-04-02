@@ -5,13 +5,19 @@
 #include <SFML/Graphics.hpp>
 
 // kt::TextEntity Class
-#include "text/text.h"
+#include "Text/Text.h"
 
 // Hardcoded values
-#include "defaults/defaults.h"
+#include "Defaults/Defaults.h"
+
+// kt::Shapes
+#include "Shapes/Shapes.h"
 
 // std::to_string()
 #include <string>
+
+// RNG
+#include <random>
 
 #if _DEBUG
 #define CONFIG_MODE "DEBUG MODE"
@@ -21,22 +27,37 @@
 
 int main()
 {
-	sf::Vector2u windowBounds = sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT);
+	sf::Vector2u windowBounds(kt::Defaults::WINDOW_WIDTH, kt::Defaults::WINDOW_HEIGHT);
 	sf::RenderWindow window(sf::VideoMode(windowBounds), CONFIG_MODE);
 
-	// Getting font from file
-	sf::Font font(FONT_DIR);
+	std::default_random_engine rng;
+	std::uniform_real_distribution<double> rngDistribution(1, kt::Defaults::WINDOW_HEIGHT);
 
-	if (!font.openFromFile(FONT_DIR)) {
-		std::cout << "ERROR: Font not found at path " << FONT_DIR << "\n";
+	// Getting font from file
+	sf::Font font(kt::Defaults::FONT_DIR);
+
+	if (!font.openFromFile(kt::Defaults::FONT_DIR)) {
+		std::cout << "ERROR: Font not found at path " << kt::Defaults::FONT_DIR << "\n";
 	}
 	else {
-		std::cout << "SUCCESS: Font found at path: " << FONT_DIR << "\n";
+		std::cout << "SUCCESS: Font found at path: " << kt::Defaults::FONT_DIR << "\n";
 	}
 
 	// Creating text from font
-	kt::text::TextEntity text(font);
-	text.setPosition(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2));
+	kt::Text::TextEntity text(font);
+	text.setPosition(sf::Vector2f(kt::Defaults::WINDOW_WIDTH / 2, kt::Defaults::WINDOW_HEIGHT / 2));
+	unsigned int fontSize = 44;
+	text.setCharacterSize(fontSize);
+	text.setFillColor(sf::Color::White);
+	text.setVelocity(sf::Vector2f{ 1.0f, 1.0f });
+
+	kt::Text::TextEntity cornerText = text;
+
+	// Creating custom circle
+	kt::Shapes::CircleEntity circle;
+	float posX = (float)rngDistribution(rng);
+	float posY = (float)rngDistribution(rng);
+	circle.setPosition(sf::Vector2f(posX, posY));
 
 	// FPS time tracking
 	sf::Clock clock;
@@ -50,58 +71,47 @@ int main()
 		iterationTime = clock.restart();
 		elapsedTime += iterationTime;
 
-		// FPS tracking in Debug configuration
-#ifdef _DEBUG
-		std::cout << elapsedTime.asMilliseconds() << "\n";
-#endif
-
 		// Checking for window events
 		while (const std::optional event = window.pollEvent())
 		{
 			if (event->is<sf::Event::Closed>()) window.close();
 		}
 
-		// Handle TextEntity
-		unsigned int fontSize = 44;
-		text.setCharacterSize(fontSize);
-		text.setFillColor(sf::Color::White);
-
-
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+			std::cout << "MOUSE CLICK" << std::endl;
+		}
 
 		// Track relative mouse position in window
 		sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(window);
-		text.setVelocity(sf::Vector2f{ 1.0f, 1.0f });
-		
-		// Handles text going out of bounds
-		text.move(text.getVelocity());
-
-		sf::FloatRect boundingBox = text.getGlobalBounds();
-		boundingBox.position.x;
 
 		// Set text string
 		std::string textContent;
-		//textContent = std::to_string(mouseLocalPosition.x) + " " + std::to_string(mouseLocalPosition.y);
+		sf::FloatRect boundingBox = text.getGlobalBounds();
 		textContent = std::to_string(boundingBox.position.x) + " " + std::to_string(boundingBox.position.y);
 		text.setString(textContent);
+		cornerText.setString(textContent);
 
-		// DEBUG
-#if _DEBUG
-		std::cout << std::to_string(mouseLocalPosition.x) + " " + std::to_string(mouseLocalPosition.y) << std::endl;
+		circle.setPosition(sf::Vector2f(boundingBox.position.x, boundingBox.position.y));
 
-		std::cout << std::to_string(text.getOrigin().x) + " " + std::to_string(text.getOrigin().y) << std::endl;
-#endif
+		// Handle text movement
+		//text.move(text.getVelocity());
 
 		// Clearing old frame from display
 		window.clear();
 
+		// Draw circle
+		window.draw(circle);
+
 		// Drawing text
 		window.draw(text);
+
+		window.draw(cornerText);
 
 		// Finally display drawn objects
 		window.display();
 
 		// FPS cap
-		sf::Time sleepTime = sf::seconds(TIMESTEP) - clock.restart();
+		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - clock.restart();
 		if (sleepTime.asSeconds() > 0)
 		{
 			sf::sleep(sleepTime);
