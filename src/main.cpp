@@ -19,14 +19,16 @@
 // RNG
 #include <random>
 
+// sqrt()
+#include <cmath>
+
 #if _DEBUG
 #define CONFIG_MODE "DEBUG MODE"
 #else
 #define CONFIG_MODE "RELEASE MODE"
 #endif
 
-int main()
-{
+int main() {
 	sf::Vector2u windowBounds(kt::Defaults::WINDOW_WIDTH, kt::Defaults::WINDOW_HEIGHT);
 	sf::RenderWindow window(sf::VideoMode(windowBounds), CONFIG_MODE);
 
@@ -67,21 +69,15 @@ int main()
 	sf::Time elapsedTime;
 	sf::Time iterationTime;
 
-	while (window.isOpen())
-	{
+	while (window.isOpen()) {
 		// Restarting time counter for FPS
 		elapsedTime = sf::seconds(0);
 		iterationTime = clock.restart();
 		elapsedTime += iterationTime;
 
 		// Checking for window events
-		while (const std::optional event = window.pollEvent())
-		{
+		while (const std::optional event = window.pollEvent()) {
 			if (event->is<sf::Event::Closed>()) window.close();
-		}
-
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-			std::cout << "MOUSE CLICK" << std::endl;
 		}
 
 		// Track relative mouse position in window
@@ -90,12 +86,22 @@ int main()
 		// Set text string
 		std::string textContent;
 		sf::FloatRect boundingBox = movingText.getGlobalBounds();
-		textContent = std::to_string(boundingBox.position.x) + " " + std::to_string(boundingBox.position.y);
+		textContent = std::to_string(boundingBox.position.x) + ", " + std::to_string(boundingBox.position.y);
 		movingText.setString(textContent);
-		textContent = std::to_string(mouseLocalPosition.x) + " " + std::to_string(mouseLocalPosition.y);
+		textContent = std::to_string(mouseLocalPosition.x) + ", " + std::to_string(mouseLocalPosition.y);
 		cornerText.setString(textContent);
 
-		circle.setPosition(sf::Vector2f(boundingBox.position.x, boundingBox.position.y));
+		//circle.setPosition(sf::Vector2f(boundingBox.position.x, boundingBox.position.y));
+
+		// Handle mouse click
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+			if (circle.contains(mouseLocalPosition)) {
+				std::cout << "yep" << std::endl;
+			}
+			else {
+				std::cout << "nop" << std::endl;
+			}
+		}
 
 		// Handle text movement
 		//text.move(text.getVelocity());

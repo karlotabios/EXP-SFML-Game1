@@ -2,6 +2,9 @@
 
 #include <SFML/Graphics.hpp>
 
+// sqrt()
+#include <cmath>
+
 namespace kt::Shapes {
 	class CircleEntity : public sf::CircleShape	{
 	private:
@@ -24,6 +27,15 @@ namespace kt::Shapes {
 		void setMass(const float& m);
 
 		template <typename T>
-		bool contains(const sf::Vector2<T> point) const;
+		bool contains(const sf::Vector2<T> point) const {
+			sf::Vector2f floatPoint(static_cast<float>(point.x), static_cast<float>(point.y));
+			
+			sf::Vector2f vectorDistance = getPosition() - floatPoint;
+			float length = vectorDistance.length(); // sqrt(x * x + y * y)
+			if (length <= getRadius()) {
+				return true;
+			}
+			return false;
+		}
 	};
 }
