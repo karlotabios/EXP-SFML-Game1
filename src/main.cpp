@@ -1,10 +1,10 @@
-// cout, cin
+// std::cout, std::cin
 #include <iostream>
 
 // SFML Graphics
 #include <SFML/Graphics.hpp>
 
-// TextEntity Class
+// kt::TextEntity Class
 #include "text/text.h"
 
 // Hardcoded values
@@ -13,9 +13,16 @@
 // std::to_string()
 #include <string>
 
+#if _DEBUG
+#define CONFIG_MODE "DEBUG MODE"
+#else
+#define CONFIG_MODE "RELEASE MODE"
+#endif
+
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT)), "SFML works!");
+	sf::Vector2u windowBounds = sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT);
+	sf::RenderWindow window(sf::VideoMode(windowBounds), CONFIG_MODE);
 
 	// Getting font from file
 	sf::Font font(FONT_DIR);
@@ -28,7 +35,8 @@ int main()
 	}
 
 	// Creating text from font
-	TextEntity text(font);
+	kt::text::TextEntity text(font);
+	text.setPosition(sf::Vector2f(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2));
 
 	// FPS time tracking
 	sf::Clock clock;
@@ -53,12 +61,35 @@ int main()
 			if (event->is<sf::Event::Closed>()) window.close();
 		}
 
-		unsigned int fontSize = 24;
+		// Handle TextEntity
+		unsigned int fontSize = 44;
 		text.setCharacterSize(fontSize);
 		text.setFillColor(sf::Color::White);
-		text.setString("Hello World!");
-		text.setVelocity({ 1.0f, 1.0f });
+
+
+
+		// Track relative mouse position in window
+		sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(window);
+		text.setVelocity(sf::Vector2f{ 1.0f, 1.0f });
+		
+		// Handles text going out of bounds
 		text.move(text.getVelocity());
+
+		sf::FloatRect boundingBox = text.getGlobalBounds();
+		boundingBox.position.x;
+
+		// Set text string
+		std::string textContent;
+		//textContent = std::to_string(mouseLocalPosition.x) + " " + std::to_string(mouseLocalPosition.y);
+		textContent = std::to_string(boundingBox.position.x) + " " + std::to_string(boundingBox.position.y);
+		text.setString(textContent);
+
+		// DEBUG
+#if _DEBUG
+		std::cout << std::to_string(mouseLocalPosition.x) + " " + std::to_string(mouseLocalPosition.y) << std::endl;
+
+		std::cout << std::to_string(text.getOrigin().x) + " " + std::to_string(text.getOrigin().y) << std::endl;
+#endif
 
 		// Clearing old frame from display
 		window.clear();
