@@ -1,13 +1,21 @@
+// cout, cin
 #include <iostream>
+
+// SFML Graphics
 #include <SFML/Graphics.hpp>
+
+// TextEntity Class
 #include "text/text.h"
+
+// Hardcoded values
 #include "defaults/defaults.h"
 
+// std::to_string()
+#include <string>
 
 int main()
 {
-	// Window objects
-	sf::RenderWindow window(sf::VideoMode( { 800, 600 } ), "SFML works!");
+	sf::RenderWindow window(sf::VideoMode(sf::Vector2u(WINDOW_WIDTH, WINDOW_HEIGHT)), "SFML works!");
 
 	// Getting font from file
 	sf::Font font(FONT_DIR);
