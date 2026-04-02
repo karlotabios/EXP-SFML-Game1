@@ -2,7 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 
-namespace kt::text {
+namespace kt::Text {
 	class TextEntity : public sf::Text {
 	private:
 		sf::Vector2f velocity = { 0.0f, 0.0f };

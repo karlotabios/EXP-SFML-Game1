@@ -1,6 +1,6 @@
-#include "text.h"
+#include "Text.h"
 
-namespace kt::text {
+namespace kt::Text {
 	sf::Vector2f TextEntity::getVelocity() const {
 		return velocity;
 	}
