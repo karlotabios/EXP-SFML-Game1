@@ -12,7 +12,13 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-file(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/text/*.cpp)
+file(GLOB_RECURSE SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp)
+
+message("FOR COMPILATION:")
+foreach(SRC_FILE ${SOURCES})
+    get_filename_component(FILE_NAME ${SRC_FILE} NAME_WE)
+    message(${FILE_NAME})
+endforeach()
 
 add_executable(main src/main.cpp ${SOURCES})
 target_compile_features(main PRIVATE cxx_std_17)
