@@ -7,8 +7,7 @@ namespace kt::Text {
 	private:
 		sf::Vector2f velocity = { 0.0f, 0.0f };
 	public:
-		using Text::Text;
-
+		TextEntity(const sf::Font& font);
 		sf::Vector2f getVelocity() const;
 		void setVelocity(const sf::Vector2f& vel);
 	};
