@@ -5,9 +5,9 @@
 namespace kt::Physical {
 	class Movable {
 	private:
-		sf::Vector2f acceleration{ 0.0f, 0.0f };
-		sf::Vector2f velocity{ 0.0f, 0.0f };
-		float mass = 1;
+		sf::Vector2f m_acceleration{ 0.0f, 0.0f };
+		sf::Vector2f m_velocity{ 0.0f, 0.0f };
+		float m_mass = 1;
 
 	public:
 		Movable();

@@ -3,13 +3,13 @@
 namespace kt::Core {
 	CoreSimulation::CoreSimulation() {};
 	bool CoreSimulation::initialize() {
-		window = sf::RenderWindow(sf::VideoMode(windowBounds), CONFIG_MODE);
+		m_window = sf::RenderWindow(sf::VideoMode(m_windowBounds), CONFIG_MODE);
 
 		std::default_random_engine rng;
 		std::uniform_real_distribution<double> rngDistribution(1, kt::Defaults::WINDOW_HEIGHT);
 
 		// Getting font from file
-		if (!font.openFromFile(kt::Defaults::FONT_DIR)) {
+		if (!m_font.openFromFile(kt::Defaults::FONT_DIR)) {
 			std::cout << "ERROR: Font not found at path " << kt::Defaults::FONT_DIR << "\n";
 			return false;
 		}
@@ -17,58 +17,58 @@ namespace kt::Core {
 			std::cout << "SUCCESS: Font found at path: " << kt::Defaults::FONT_DIR << "\n";
 		}
 
-		font.setSmooth(true);
+		m_font.setSmooth(true);
 
 		// Creating text from font
-		movingText = new kt::Text::TextEntity(font);
-		movingText->setFont(font);
+		m_movingText = new kt::Text::TextEntity(m_font);
+		m_movingText->setFont(m_font);
 		unsigned int fontSize = 24;
-		movingText->setPosition(sf::Vector2f(kt::Defaults::WINDOW_WIDTH / 2, kt::Defaults::WINDOW_HEIGHT / 2));
-		movingText->setCharacterSize(fontSize);
+		m_movingText->setPosition(sf::Vector2f(kt::Defaults::WINDOW_WIDTH / 2, kt::Defaults::WINDOW_HEIGHT / 2));
+		m_movingText->setCharacterSize(fontSize);
 		sf::Color grey(255, 255, 255, 60);
-		movingText->setFillColor(grey);
-		movingText->setVelocity(sf::Vector2f{ 1.0f, 1.0f });
+		m_movingText->setFillColor(grey);
+		m_movingText->setVelocity(sf::Vector2f{ 1.0f, 1.0f });
 
-		cornerText = new kt::Text::TextEntity(font);
-		cornerText->setFont(font);
-		cornerText->setCharacterSize(fontSize);
-		cornerText->setFillColor(sf::Color::White);
+		m_cornerText = new kt::Text::TextEntity(m_font);
+		m_cornerText->setFont(m_font);
+		m_cornerText->setCharacterSize(fontSize);
+		m_cornerText->setFillColor(sf::Color::White);
 
 		// Creating custom circle
 		float posX = (float)rngDistribution(rng);
 		float posY = (float)rngDistribution(rng);
-		circle.setPosition(sf::Vector2f(posX, posY));
+		m_circle.setPosition(sf::Vector2f(posX, posY));
 
 		return true;
 	}
 	bool CoreSimulation::run() {
-		while (window.isOpen()) {
+		while (m_window.isOpen()) {
 			// Restarting time counter for FPS
-			elapsedTime = sf::seconds(0);
-			iterationTime = clock.restart();
-			elapsedTime += iterationTime;
+			m_elapsedTime = sf::seconds(0);
+			m_iterationTime = m_clock.restart();
+			m_elapsedTime += m_iterationTime;
 
 			// Checking for window events
-			while (const std::optional event = window.pollEvent()) {
-				if (event->is<sf::Event::Closed>()) window.close();
+			while (const std::optional event = m_window.pollEvent()) {
+				if (event->is<sf::Event::Closed>()) m_window.close();
 			}
 
 			// Track relative mouse position in window
-			sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(window);
+			sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(m_window);
 
 			// Set text string
 			std::string textContent;
-			sf::FloatRect boundingBox = movingText->getGlobalBounds();
+			sf::FloatRect boundingBox = m_movingText->getGlobalBounds();
 			textContent = std::to_string(boundingBox.position.x) + ", " + std::to_string(boundingBox.position.y);
-			movingText->setString(textContent);
+			m_movingText->setString(textContent);
 			textContent = std::to_string(mouseLocalPosition.x) + ", " + std::to_string(mouseLocalPosition.y);
-			cornerText->setString(textContent);
+			m_cornerText->setString(textContent);
 
 			//circle.setPosition(sf::Vector2f(boundingBox.position.x, boundingBox.position.y));
 
 			// Handle mouse click
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-				if (circle.contains(mouseLocalPosition)) {
+				if (m_circle.contains(mouseLocalPosition)) {
 					std::cout << "yep" << std::endl;
 				}
 				else {
@@ -87,41 +87,41 @@ namespace kt::Core {
 	}
 
 	bool CoreSimulation::exitSimulation() {
-		this->deletePointers();
+		this->deleteAllPointers();
 		return true;
 	}
 
 	void CoreSimulation::drawScreen() {
-		if (!window.isOpen()) {
+		if (!m_window.isOpen()) {
 			return;
 		}
 		// Clearing old frame from display
-		window.clear();
+		m_window.clear();
 
 		// Draw circle
-		window.draw(circle);
+		m_window.draw(m_circle);
 
 		// Drawing text
-		window.draw(*movingText);
+		m_window.draw(*m_movingText);
 
-		window.draw(*cornerText);
+		m_window.draw(*m_cornerText);
 
 		// Finally display drawn objects
-		window.display();
+		m_window.display();
 	}
 
 	void CoreSimulation::capFPS() {
 		// FPS cap
-		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - clock.restart();
+		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - m_clock.restart();
 		if (sleepTime.asSeconds() > 0)
 		{
 			sf::sleep(sleepTime);
 		}
 	}
 
-	void CoreSimulation::deletePointers() {
-		delete cornerText;
-		delete movingText;
+	void CoreSimulation::deleteAllPointers() {
+		delete m_cornerText;
+		delete m_movingText;
 		return;
 	}
 

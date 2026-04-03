@@ -31,26 +31,26 @@ namespace kt::Core {
 	class CoreSimulation {
 	private:
 		// Simulation viewport
-		sf::Vector2u windowBounds = sf::Vector2u(kt::Defaults::WINDOW_WIDTH, kt::Defaults::WINDOW_HEIGHT);
-		sf::RenderWindow window;
+		sf::Vector2u m_windowBounds = sf::Vector2u(kt::Defaults::WINDOW_WIDTH, kt::Defaults::WINDOW_HEIGHT);
+		sf::RenderWindow m_window;
 
 		// Game Actors
-		kt::Text::TextEntity* movingText = nullptr;
-		kt::Text::TextEntity* cornerText = nullptr;
-		kt::Shapes::CircleEntity circle;
+		kt::Text::TextEntity* m_movingText = nullptr;
+		kt::Text::TextEntity* m_cornerText = nullptr;
+		kt::Shapes::CircleEntity m_circle;
 
 		// Necessary objects for Actors
-		sf::Font font;
+		sf::Font m_font;
 
 		// FPS time tracking
-		sf::Clock clock;
-		sf::Time elapsedTime;
-		sf::Time iterationTime;
+		sf::Clock m_clock;
+		sf::Time m_elapsedTime;
+		sf::Time m_iterationTime;
 
 		// Helper functions
 		void drawScreen();
 		void capFPS();
-		void deletePointers();
+		void deleteAllPointers();
 	public:
 		CoreSimulation();
 		bool initialize();
