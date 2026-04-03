@@ -81,7 +81,7 @@ namespace kt::Core {
 
 			this->drawScreen();
 
-			
+			this->capFPS();
 		}
 		return true;
 	}
