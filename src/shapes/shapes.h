@@ -2,11 +2,10 @@
 
 #include <SFML/Graphics.hpp>
 
-// sqrt()
-#include <cmath>
+#include "../Physical/Movable.h"
 
 namespace kt::Shapes {
-	class CircleEntity : public sf::CircleShape	{
+	class CircleEntity : public sf::CircleShape, public kt::Physical::Movable {
 	private:
 		sf::Vector2f acceleration{ 0.0f, 0.0f };
 		sf::Vector2f velocity{ 0.0f, 0.0f };
@@ -16,15 +15,6 @@ namespace kt::Shapes {
 		using CircleShape::CircleShape;
 
 		CircleEntity();
-
-		sf::Vector2f getAcceleration();
-		void setAcceleration(const sf::Vector2f& accel);
-
-		sf::Vector2f getVelocity();
-		void setVelocity(const sf::Vector2f& vel);
-
-		float getMass();
-		void setMass(const float& m);
 
 		template <typename T>
 		bool contains(const sf::Vector2<T> point) const {
