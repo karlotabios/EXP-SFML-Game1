@@ -20,7 +20,7 @@
 #include <random>
 
 // sqrt()
-#include <cmath>
+// #include <cmath>
 
 #if _DEBUG
 #define CONFIG_MODE "DEBUG MODE"
@@ -37,6 +37,7 @@ int main() {
 
 	// Getting font from file
 	sf::Font font(kt::Defaults::FONT_DIR);
+	font.setSmooth(true);
 
 	if (!font.openFromFile(kt::Defaults::FONT_DIR)) {
 		std::cout << "ERROR: Font not found at path " << kt::Defaults::FONT_DIR << "\n";
@@ -50,11 +51,11 @@ int main() {
 	unsigned int fontSize = 24;
 	movingText.setPosition(sf::Vector2f(kt::Defaults::WINDOW_WIDTH / 2, kt::Defaults::WINDOW_HEIGHT / 2));
 	movingText.setCharacterSize(fontSize);
-	movingText.setFillColor(sf::Color::White);
+	sf::Color grey(255, 255, 255, 60);
+	movingText.setFillColor(grey);
 	movingText.setVelocity(sf::Vector2f{ 1.0f, 1.0f });
 
 	kt::Text::TextEntity cornerText(font);
-	cornerText.setPosition(sf::Vector2f(0.0f, 0.0f));
 	cornerText.setCharacterSize(fontSize);
 	cornerText.setFillColor(sf::Color::White);
 
