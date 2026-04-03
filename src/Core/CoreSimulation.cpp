@@ -69,15 +69,12 @@ namespace kt::Core {
 			// Handle mouse click
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 				if (m_circle.contains(mouseLocalPosition)) {
-					std::cout << "yep" << std::endl;
+					m_circle.setPosition(sf::Vector2f(mouseLocalPosition.x, mouseLocalPosition.y));
 				}
 				else {
 					std::cout << "nop" << std::endl;
 				}
 			}
-
-			// Handle text movement
-			//text.move(text.getVelocity());
 
 			this->drawScreen();
 
