@@ -9,6 +9,8 @@ namespace kt::Physical {
 		sf::Vector2f m_velocity{ 0.0f, 0.0f };
 		float m_mass = 1;
 
+		float m_movementForce{ 1.0f };
+
 	public:
 		Movable();
 
@@ -20,6 +22,9 @@ namespace kt::Physical {
 
 		virtual float getMass();
 		virtual void setMass(const float& m);
+
+		virtual float getMovementForce();
+		virtual void setMovementForce(const float& m);
 
 		virtual ~Movable();
 	};

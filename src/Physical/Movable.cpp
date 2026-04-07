@@ -27,5 +27,12 @@ namespace kt::Physical {
 		m_mass = m;
 	}
 
+	float Movable::getMovementForce() {
+		return m_movementForce;
+	}
+	void Movable::setMovementForce(const float& m) {
+		m_movementForce = m;
+	}
+
 	Movable::~Movable() {};
 }
