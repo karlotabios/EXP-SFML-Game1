@@ -56,6 +56,6 @@ namespace kt::Core {
 		bool initialize();
 		bool run();
 		bool exitSimulation();
-		~CoreSimulation();
+		virtual ~CoreSimulation();
 	};
 }

@@ -23,5 +23,7 @@ namespace kt::Shapes {
 			}
 			return false;
 		}
+
+		virtual ~CircleEntity();
 	};
 }

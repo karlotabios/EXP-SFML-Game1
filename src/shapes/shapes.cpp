@@ -8,4 +8,6 @@ namespace kt::Shapes {
 		setFillColor(sf::Color::Red);
 		setOutlineColor(sf::Color::Red);
 	}
+
+	CircleEntity::~CircleEntity() {};
 }
