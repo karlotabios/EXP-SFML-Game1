@@ -2,6 +2,7 @@
 
 namespace kt::Core {
 	CoreSimulation::CoreSimulation() {};
+
 	bool CoreSimulation::initialize() {
 		m_window = sf::RenderWindow(sf::VideoMode(m_windowBounds), CONFIG_MODE);
 
@@ -41,6 +42,7 @@ namespace kt::Core {
 
 		return true;
 	}
+
 	bool CoreSimulation::run() {
 		while (m_window.isOpen()) {
 			// Restarting time counter for FPS
@@ -67,17 +69,13 @@ namespace kt::Core {
 			//circle.setPosition(sf::Vector2f(boundingBox.position.x, boundingBox.position.y));
 
 			// Handle keyboard presses
-			this->checkKeyboardInput();
+			this->handleKeyboardInput();
 
 			// Handle mouse click
-			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-				if (m_circle.contains(mouseLocalPosition)) {
-					m_circle.setPosition(sf::Vector2f(mouseLocalPosition.x, mouseLocalPosition.y));
-				}
-				else {
-					std::cout << "nop" << std::endl;
-				}
-			}
+			this->handleMouseInput();
+
+			// Handle object movement
+			// TODO
 
 			this->drawScreen();
 
@@ -88,7 +86,7 @@ namespace kt::Core {
 
 	bool CoreSimulation::exitSimulation() {
 		this->deleteAllPointers();
-		return true;
+		return true;	// WIP, thinking of changing this
 	}
 
 	void CoreSimulation::drawScreen() {
@@ -119,23 +117,71 @@ namespace kt::Core {
 		}
 	}
 
-	bool CoreSimulation::checkKeyboardInput() {
+	bool CoreSimulation::handleKeyboardInput() {
 		bool isKeyPressed = false;
-		sf::Keyboard::Key keyUp = sf::Keyboard::Key::W;
-		sf::Keyboard::Key keyLeft = sf::Keyboard::Key::A;
-		sf::Keyboard::Key keyDown = sf::Keyboard::Key::S;
-		sf::Keyboard::Key keyRight = sf::Keyboard::Key::D;
+		const sf::Keyboard::Key keyUp = sf::Keyboard::Key::W;
+		const sf::Keyboard::Key keyLeft = sf::Keyboard::Key::A;
+		const sf::Keyboard::Key keyDown = sf::Keyboard::Key::S;
+		const sf::Keyboard::Key keyRight = sf::Keyboard::Key::D;
 
 		sf::Keyboard::Key keys[] = { keyUp, keyLeft, keyDown, keyRight };
 		
 		for (sf::Keyboard::Key key : keys) {
 			if (sf::Keyboard::isKeyPressed(key)) {
 				isKeyPressed = true;
-				std::cout << static_cast<int>(key) << std::endl;	// TODO: Create actual functionality instead of this
+				std::cout << "[INFO] Keyboard key pressed, enum base type: " << static_cast<int>(key) << std::endl;
+				
+				float force = m_circle.getMovementForce();
+				float mass = m_circle.getMass();
+				sf::Vector2f acceleration = m_circle.getAcceleration();
+
+				switch (key) {
+				case keyUp:
+					acceleration.y -= force / mass;
+					break;
+				case keyDown:
+					acceleration.y += force / mass;
+					break;
+				case keyLeft:
+					acceleration.x -= force / mass;
+					break;
+				case keyRight:
+					acceleration.x += force / mass;
+					break;
+				default:
+					break;
+				}
+				m_circle.setAcceleration(acceleration);
 			}
 		}
 
 		return isKeyPressed;
+	}
+
+	bool CoreSimulation::handleMouseInput() {
+		sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(m_window);
+
+		bool isMouseClicked = false;
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+			if (m_circle.contains(mouseLocalPosition)) {
+				m_circle.setPosition(sf::Vector2f(mouseLocalPosition.x, mouseLocalPosition.y));
+			}
+			else {
+				std::cout << "[INFO] Mouse left click pressed, but without interaction" << std::endl;
+			}
+		}
+
+		return isMouseClicked;
+	}
+
+	void CoreSimulation::handleObjectMovement() {
+		sf::Vector2f acceleration = m_circle.getAcceleration();
+		sf::Vector2f velocity = m_circle.getVelocity();
+		velocity += acceleration;
+		m_circle.setVelocity(velocity);
+
+		// TODO apply velocity to position
+		return;
 	}
 
 	void CoreSimulation::deleteAllPointers() {
