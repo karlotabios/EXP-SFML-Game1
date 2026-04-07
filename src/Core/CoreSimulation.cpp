@@ -75,7 +75,7 @@ namespace kt::Core {
 			this->handleMouseInput();
 
 			// Handle object movement
-			// TODO
+			this->handleObjectMovement();
 
 			this->drawScreen();
 
@@ -129,7 +129,6 @@ namespace kt::Core {
 		for (sf::Keyboard::Key key : keys) {
 			if (sf::Keyboard::isKeyPressed(key)) {
 				isKeyPressed = true;
-				std::cout << "[INFO] Keyboard key pressed, enum base type: " << static_cast<int>(key) << std::endl;
 				
 				float force = m_circle.getMovementForce();
 				float mass = m_circle.getMass();
@@ -137,16 +136,36 @@ namespace kt::Core {
 
 				switch (key) {
 				case keyUp:
+					std::cout << "[INFO] Keyboard key pressed: keyUp" << std::endl;
+					std::cout << "[INFO] acceleration.y: " << acceleration.y << std::endl;
+					std::cout << "[INFO] force: " << force << std::endl;
+					std::cout << "[INFO] mass: " << mass << std::endl;
 					acceleration.y -= force / mass;
+					std::cout << "[INFO] acceleration.y -= force / mass; ==> " << acceleration.y << std::endl;
 					break;
 				case keyDown:
+					std::cout << "[INFO] Keyboard key pressed: keyDown" << std::endl;
+					std::cout << "[INFO] acceleration.y: " << acceleration.y << std::endl;
+					std::cout << "[INFO] force: " << force << std::endl;
+					std::cout << "[INFO] mass: " << mass << std::endl;
 					acceleration.y += force / mass;
+					std::cout << "[INFO] acceleration.y += force / mass; ==> " << acceleration.y << std::endl;
 					break;
 				case keyLeft:
+					std::cout << "[INFO] Keyboard key pressed: keyLeft" << std::endl;
+					std::cout << "[INFO] acceleration.x: " << acceleration.x << std::endl;
+					std::cout << "[INFO] force: " << force << std::endl;
+					std::cout << "[INFO] mass: " << mass << std::endl;
 					acceleration.x -= force / mass;
+					std::cout << "[INFO] acceleration.x -= force / mass; ==> " << acceleration.x << std::endl;
 					break;
 				case keyRight:
+					std::cout << "[INFO] Keyboard key pressed: keyRight" << std::endl;
+					std::cout << "[INFO] acceleration.x: " << acceleration.x << std::endl;
+					std::cout << "[INFO] force: " << force << std::endl;
+					std::cout << "[INFO] mass: " << mass << std::endl;
 					acceleration.x += force / mass;
+					std::cout << "[INFO] acceleration.x += force / mass; ==> " << acceleration.x << std::endl;
 					break;
 				default:
 					break;
@@ -154,7 +173,9 @@ namespace kt::Core {
 				m_circle.setAcceleration(acceleration);
 			}
 		}
-
+		if (!isKeyPressed) {
+			m_circle.setAcceleration(sf::Vector2f{ 0.0f, 0.0f });	// No force via player input applied, so no acceleration
+		}
 		return isKeyPressed;
 	}
 
@@ -175,12 +196,9 @@ namespace kt::Core {
 	}
 
 	void CoreSimulation::handleObjectMovement() {
-		sf::Vector2f acceleration = m_circle.getAcceleration();
-		sf::Vector2f velocity = m_circle.getVelocity();
-		velocity += acceleration;
-		m_circle.setVelocity(velocity);
-
-		// TODO apply velocity to position
+		m_circle.move();
+		// TODO handle object collision here
+		// TODO handle friction
 		return;
 	}
 

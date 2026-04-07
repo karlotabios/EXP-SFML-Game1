@@ -13,7 +13,7 @@
 #include "../Defaults/Defaults.h"
 
 // kt::Shapes
-#include "../Shapes/Shapes.h"
+#include "../Shapes/CircleEntity.h"
 
 // std::to_string()
 #include <string>
