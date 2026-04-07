@@ -66,6 +66,9 @@ namespace kt::Core {
 
 			//circle.setPosition(sf::Vector2f(boundingBox.position.x, boundingBox.position.y));
 
+			// Handle keyboard presses
+			this->checkKeyboardInput();
+
 			// Handle mouse click
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 				if (m_circle.contains(mouseLocalPosition)) {
@@ -114,6 +117,25 @@ namespace kt::Core {
 		{
 			sf::sleep(sleepTime);
 		}
+	}
+
+	bool CoreSimulation::checkKeyboardInput() {
+		bool isKeyPressed = false;
+		sf::Keyboard::Key keyUp = sf::Keyboard::Key::W;
+		sf::Keyboard::Key keyLeft = sf::Keyboard::Key::A;
+		sf::Keyboard::Key keyDown = sf::Keyboard::Key::S;
+		sf::Keyboard::Key keyRight = sf::Keyboard::Key::D;
+
+		sf::Keyboard::Key keys[] = { keyUp, keyLeft, keyDown, keyRight };
+		
+		for (sf::Keyboard::Key key : keys) {
+			if (sf::Keyboard::isKeyPressed(key)) {
+				isKeyPressed = true;
+				std::cout << static_cast<int>(key) << std::endl;	// TODO: Create actual functionality instead of this
+			}
+		}
+
+		return isKeyPressed;
 	}
 
 	void CoreSimulation::deleteAllPointers() {

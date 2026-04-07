@@ -50,6 +50,7 @@ namespace kt::Core {
 		// Helper functions
 		void drawScreen();
 		void capFPS();
+		bool checkKeyboardInput();
 		void deleteAllPointers();
 	public:
 		CoreSimulation();
