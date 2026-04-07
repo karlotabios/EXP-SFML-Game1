@@ -24,6 +24,8 @@ namespace kt::Shapes {
 			return false;
 		}
 
+		void move();
+
 		virtual ~CircleEntity();
 	};
 }
