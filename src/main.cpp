@@ -10,5 +10,5 @@ int main() {
 		Game.run();
 	}
 	Game.exitSimulation();
-	return 0;	
+	return 0;
 }
