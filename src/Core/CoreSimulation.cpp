@@ -4,7 +4,10 @@ namespace kt::Core {
 	CoreSimulation::CoreSimulation() {};
 
 	bool CoreSimulation::initialize() {
-		m_window = sf::RenderWindow(sf::VideoMode(m_windowBounds), CONFIG_MODE);
+		sf::ContextSettings settings{};
+		settings.antiAliasingLevel = kt::Defaults::ANTI_ALIASING_LEVEL;
+
+		m_window = sf::RenderWindow(sf::VideoMode(m_windowBounds), CONFIG_MODE, sf::Style::Default, sf::State::Windowed, settings);
 
 		std::default_random_engine rng;
 		std::uniform_real_distribution<double> rngDistribution(1, kt::Defaults::WINDOW_HEIGHT);
@@ -26,7 +29,7 @@ namespace kt::Core {
 		unsigned int fontSize = 24;
 		m_movingText->setPosition(sf::Vector2f(kt::Defaults::WINDOW_WIDTH / 2, kt::Defaults::WINDOW_HEIGHT / 2));
 		m_movingText->setCharacterSize(fontSize);
-		sf::Color grey(255, 255, 255, 60);
+		sf::Color grey(255, 255, 255, 60);	// R,G,B,Alpha
 		m_movingText->setFillColor(grey);
 		m_movingText->setVelocity(sf::Vector2f{ 1.0f, 1.0f });
 
@@ -80,6 +83,8 @@ namespace kt::Core {
 			this->drawScreen();
 
 			this->capFPS();
+
+			std::system("cls");
 		}
 		return true;
 	}
@@ -111,70 +116,71 @@ namespace kt::Core {
 	void CoreSimulation::capFPS() {
 		// FPS cap
 		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - m_clock.restart();
-		if (sleepTime.asSeconds() > 0)
+		if (sleepTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
 		{
+			std::cout << "[INFO] Capping FPS, sleepTime.asSeconds(): " << sleepTime.asSeconds() << std::endl;
 			sf::sleep(sleepTime);
 		}
 	}
 
 	bool CoreSimulation::handleKeyboardInput() {
 		bool isKeyPressed = false;
+		bool isMoveKeyPressed = false;
 		const sf::Keyboard::Key keyUp = sf::Keyboard::Key::W;
 		const sf::Keyboard::Key keyLeft = sf::Keyboard::Key::A;
 		const sf::Keyboard::Key keyDown = sf::Keyboard::Key::S;
 		const sf::Keyboard::Key keyRight = sf::Keyboard::Key::D;
+		const sf::Keyboard::Key keyFriction = sf::Keyboard::Key::Space;
 
-		sf::Keyboard::Key keys[] = { keyUp, keyLeft, keyDown, keyRight };
-		
+		sf::Keyboard::Key keys[] = { keyUp, keyLeft, keyDown, keyRight, keyFriction };
+
+		sf::Vector2f appliedForce{ 0.0f, 0.0f };
+
 		for (sf::Keyboard::Key key : keys) {
 			if (sf::Keyboard::isKeyPressed(key)) {
 				isKeyPressed = true;
 				
-				float force = m_circle.getMovementForce();
-				float mass = m_circle.getMass();
-				sf::Vector2f acceleration = m_circle.getAcceleration();
-
 				switch (key) {
 				case keyUp:
-					std::cout << "[INFO] Keyboard key pressed: keyUp" << std::endl;
-					std::cout << "[INFO] acceleration.y: " << acceleration.y << std::endl;
-					std::cout << "[INFO] force: " << force << std::endl;
-					std::cout << "[INFO] mass: " << mass << std::endl;
-					acceleration.y -= force / mass;
-					std::cout << "[INFO] acceleration.y -= force / mass; ==> " << acceleration.y << std::endl;
+					isMoveKeyPressed = true;
+					appliedForce.y += -kt::Defaults::PLAYER_MOVEMENT_FORCE.y;
 					break;
 				case keyDown:
-					std::cout << "[INFO] Keyboard key pressed: keyDown" << std::endl;
-					std::cout << "[INFO] acceleration.y: " << acceleration.y << std::endl;
-					std::cout << "[INFO] force: " << force << std::endl;
-					std::cout << "[INFO] mass: " << mass << std::endl;
-					acceleration.y += force / mass;
-					std::cout << "[INFO] acceleration.y += force / mass; ==> " << acceleration.y << std::endl;
+					isMoveKeyPressed = true;
+					appliedForce.y += kt::Defaults::PLAYER_MOVEMENT_FORCE.y;
 					break;
 				case keyLeft:
-					std::cout << "[INFO] Keyboard key pressed: keyLeft" << std::endl;
-					std::cout << "[INFO] acceleration.x: " << acceleration.x << std::endl;
-					std::cout << "[INFO] force: " << force << std::endl;
-					std::cout << "[INFO] mass: " << mass << std::endl;
-					acceleration.x -= force / mass;
-					std::cout << "[INFO] acceleration.x -= force / mass; ==> " << acceleration.x << std::endl;
+					isMoveKeyPressed = true;
+					appliedForce.x += -kt::Defaults::PLAYER_MOVEMENT_FORCE.x;
 					break;
 				case keyRight:
-					std::cout << "[INFO] Keyboard key pressed: keyRight" << std::endl;
-					std::cout << "[INFO] acceleration.x: " << acceleration.x << std::endl;
-					std::cout << "[INFO] force: " << force << std::endl;
-					std::cout << "[INFO] mass: " << mass << std::endl;
-					acceleration.x += force / mass;
-					std::cout << "[INFO] acceleration.x += force / mass; ==> " << acceleration.x << std::endl;
+					isMoveKeyPressed = true;
+					appliedForce.x += kt::Defaults::PLAYER_MOVEMENT_FORCE.x;
+					break;
+				case keyFriction:
+					if (!m_isKeyFrictionPressed) {
+						if (!m_isFrictionEnabled) {
+							std::cout << "[INFO] Enabled Friction!" << std::endl;
+						}
+						else {
+							std::cout << "[INFO] Disabled Friction!" << std::endl;
+						}
+						m_isKeyFrictionPressed = true;
+						m_isFrictionEnabled = !m_isFrictionEnabled;
+					}
 					break;
 				default:
 					break;
 				}
-				m_circle.setAcceleration(acceleration);
 			}
 		}
-		if (!isKeyPressed) {
-			m_circle.setAcceleration(sf::Vector2f{ 0.0f, 0.0f });	// No force via player input applied, so no acceleration
+
+		if (isMoveKeyPressed) {
+			m_circle.addForce(appliedForce);
+		}
+
+		if ((!sf::Keyboard::isKeyPressed(keyFriction)) && (m_isKeyFrictionPressed)) {
+			m_isKeyFrictionPressed = false;
 		}
 		return isKeyPressed;
 	}
@@ -184,11 +190,11 @@ namespace kt::Core {
 
 		bool isMouseClicked = false;
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
+			isMouseClicked = true;
+
 			if (m_circle.contains(mouseLocalPosition)) {
 				m_circle.setPosition(sf::Vector2f(mouseLocalPosition.x, mouseLocalPosition.y));
-			}
-			else {
-				std::cout << "[INFO] Mouse left click pressed, but without interaction" << std::endl;
+				m_circle.setVelocity(sf::Vector2f{ 0.0f, 0.0f });
 			}
 		}
 
@@ -196,9 +202,7 @@ namespace kt::Core {
 	}
 
 	void CoreSimulation::handleObjectMovement() {
-		m_circle.move();
-		// TODO handle object collision here
-		// TODO handle friction
+		m_circle.move(m_isFrictionEnabled);
 		return;
 	}
 

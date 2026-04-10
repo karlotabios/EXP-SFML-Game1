@@ -21,6 +21,9 @@
 // RNG
 #include <random>
 
+// Windows System commands, std::system
+#include <cstdlib>
+
 #if _DEBUG
 #define CONFIG_MODE "DEBUG MODE"
 #else
@@ -35,7 +38,7 @@ namespace kt::Core {
 		sf::RenderWindow m_window{};
 
 		// Game Actors
-		kt::Text::TextEntity* m_movingText = nullptr;
+		kt::Text::TextEntity* m_movingText = nullptr;	// Text is a pointer because it requires instantiation with a font type object
 		kt::Text::TextEntity* m_cornerText = nullptr;
 		kt::Shapes::CircleEntity m_circle{};
 
@@ -46,6 +49,12 @@ namespace kt::Core {
 		sf::Clock m_clock{};
 		sf::Time m_elapsedTime{};
 		sf::Time m_iterationTime{};
+
+		// Key-press tracking
+		bool m_isKeyFrictionPressed = false;
+
+		// Debugging features
+		bool m_isFrictionEnabled = true;
 
 		// Helper functions
 		void drawScreen();
