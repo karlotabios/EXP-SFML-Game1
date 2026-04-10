@@ -1,12 +1,18 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
+#include <algorithm>
+
+#include "../Defaults/Defaults.h"
 
 #include "../Physical/Movable.h"
 
 namespace kt::Shapes {
 	class CircleEntity : public sf::CircleShape, public kt::Physical::Movable {
 	private:
+		bool m_isMoving = false;
+
 	public:
 		using CircleShape::CircleShape;
 
@@ -24,7 +30,9 @@ namespace kt::Shapes {
 			return false;
 		}
 
-		void move();
+		void move(bool isFrictionEnabled);
+		bool isMoving() const;
+		void addForce(const sf::Vector2f appliedForce);
 
 		virtual ~CircleEntity();
 	};
