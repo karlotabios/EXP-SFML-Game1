@@ -203,6 +203,31 @@ namespace kt::Core {
 
 	void CoreSimulation::handleObjectMovement() {
 		m_circle.move(m_isFrictionEnabled);
+
+		// Handle collision with screen bounds
+		sf::Vector2f position = m_circle.getPosition();
+		float radius = m_circle.getRadius();
+		float rightEdge = position.x + radius;
+		float leftEdge = position.x - radius;
+		float topEdge = position.y - radius;
+		float bottomEdge = position.y + radius;
+		if (rightEdge >= kt::Defaults::WINDOW_WIDTH) {
+			m_circle.setVelocity({ -m_circle.getVelocity().x, m_circle.getVelocity().y });
+			m_circle.setPosition({ kt::Defaults::WINDOW_WIDTH - radius, m_circle.getPosition().y });
+		}
+		if (leftEdge <= 0.0f) {
+			m_circle.setVelocity({ -m_circle.getVelocity().x, m_circle.getVelocity().y });
+			m_circle.setPosition({ radius, m_circle.getPosition().y });
+		}
+		if (topEdge <= 0.0f) {
+			m_circle.setVelocity({ m_circle.getVelocity().x, -m_circle.getVelocity().y });
+			m_circle.setPosition({ m_circle.getPosition().x, radius });
+		}
+		if (bottomEdge >= kt::Defaults::WINDOW_HEIGHT) {
+			m_circle.setVelocity({ m_circle.getVelocity().x, -m_circle.getVelocity().y });
+			m_circle.setPosition({ m_circle.getPosition().x, kt::Defaults::WINDOW_HEIGHT - radius });
+		}
+
 		return;
 	}
 
