@@ -9,7 +9,7 @@ namespace kt::Physical {
 	private:
 		sf::Vector2f m_acceleration{ 0.0f, 0.0f };
 		sf::Vector2f m_velocity{ 0.0f, 0.0f };
-		float m_mass = 10;
+		float m_mass = 1;
 
 	protected:
 		std::vector<sf::Vector2f> m_forces;
