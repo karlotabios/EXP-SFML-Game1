@@ -12,8 +12,8 @@ namespace kt::Defaults {
 	static const float WINDOW_HEIGHT = 1040.0f;
 	static const float WINDOW_WIDTH = 1920.0f;
 	static const std::string FONT_DIR = "../font/Roboto/Roboto-VariableFont_wdth,wght.ttf";
-	static const float STATIC_FRICTION_COEF = 0.5f;		// Values ideally clamped from 0.0f to 1.0f
-	static const float KINETIC_FRICTION_COEF = 0.3f;	// Values ideally clamped from 0.0f to 1.0f
-	static const float GRAVITY_ACCELERATION = 9.8f;
-	static const sf::Vector2f PLAYER_MOVEMENT_FORCE{ 150.0f, 150.0f };
+	static const float STATIC_FRICTION_COEF = 0.75f;		// Values ideally clamped from 0.0f to 1.0f
+	static const float KINETIC_FRICTION_COEF = 0.5f;	// Values ideally clamped from 0.0f to 1.0f
+	static const float GRAVITY_ACCELERATION = 2000.0f;
+	static const sf::Vector2f PLAYER_MOVEMENT_FORCE{ 15000.0f, 15000.0f };
 }
