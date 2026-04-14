@@ -46,37 +46,19 @@ namespace kt::Core {
 
 	bool CoreSimulation::run() {
 		while (m_window.isOpen()) {
-			// Restarting time counter for FPS
-			m_elapsedTime = sf::seconds(0);
-			m_iterationTime = m_clock.restart();
-			m_elapsedTime += m_iterationTime;
-
 			// Checking for window events
 			while (const std::optional event = m_window.pollEvent()) {
 				if (event->is<sf::Event::Closed>()) m_window.close();
 			}
 
-			// Track relative mouse position in window
-			sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(m_window);
-
-			// Set text string
-			std::string textContent;
-			sf::FloatRect boundingBox = m_movingText.getGlobalBounds();
-			textContent = std::to_string(boundingBox.position.x) + ", " + std::to_string(boundingBox.position.y);
-			m_movingText.setString(textContent);
-			textContent = std::to_string(mouseLocalPosition.x) + ", " + std::to_string(mouseLocalPosition.y);
-			m_cornerText.setString(textContent);
-
-			//circle.setPosition(sf::Vector2f(boundingBox.position.x, boundingBox.position.y));
-
-			// Handle keyboard presses
-			this->handleKeyboardInput();
-
-			// Handle mouse click
-			this->handleMouseInput();
+			// Handle input
+			this->handleInput();
 
 			// Handle object movement
 			this->handleObjectMovement();
+
+			// Update
+			this->update();
 
 			this->drawScreen();
 
@@ -88,8 +70,22 @@ namespace kt::Core {
 	}
 
 	bool CoreSimulation::exitSimulation() {
-		this->deleteAllPointers();
 		return true;	// WIP, thinking of changing this
+	}
+
+	bool CoreSimulation::update() {
+		// Track relative mouse position in window
+		sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(m_window);
+
+		// Set text string
+		std::string textContent;
+		sf::FloatRect boundingBox = m_movingText.getGlobalBounds();
+		textContent = std::to_string(boundingBox.position.x) + ", " + std::to_string(boundingBox.position.y);
+		m_movingText.setString(textContent);
+		textContent = std::to_string(mouseLocalPosition.x) + ", " + std::to_string(mouseLocalPosition.y);
+		m_cornerText.setString(textContent);
+
+		return true;
 	}
 
 	void CoreSimulation::drawScreen() {
@@ -113,12 +109,24 @@ namespace kt::Core {
 
 	void CoreSimulation::capFPS() {
 		// FPS cap
-		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - m_clock.restart();
-		if (sleepTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
+		sf::Time deltaTime = sf::seconds(kt::Defaults::TIMESTEP) - m_clock.restart();
+		if (deltaTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
 		{
-			std::cout << "[INFO] Capping FPS, sleepTime.asSeconds(): " << sleepTime.asSeconds() << std::endl;
-			sf::sleep(sleepTime);
+			std::cout << "[INFO] Capping FPS, deltaTime.asSeconds(): " << deltaTime.asSeconds() << std::endl;
+			sf::sleep(deltaTime);
 		}
+
+		// Restarting time counter for FPS
+		m_elapsedTime = sf::seconds(0);
+		m_iterationTime = m_clock.restart();
+		m_elapsedTime += m_iterationTime;
+	}
+
+	bool CoreSimulation::handleInput() {
+		bool isSuccessful = false;
+		isSuccessful = this->handleKeyboardInput();
+		isSuccessful = this->handleMouseInput();
+		return isSuccessful;
 	}
 
 	bool CoreSimulation::handleKeyboardInput() {
@@ -226,10 +234,6 @@ namespace kt::Core {
 			m_circle.setPosition({ m_circle.getPosition().x, kt::Defaults::WINDOW_HEIGHT - radius });
 		}
 
-		return;
-	}
-
-	void CoreSimulation::deleteAllPointers() {
 		return;
 	}
 

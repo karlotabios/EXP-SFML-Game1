@@ -57,12 +57,13 @@ namespace kt::Core {
 		bool m_isFrictionEnabled = true;
 
 		// Helper functions
-		void drawScreen();
-		void capFPS();
+		bool handleInput();
 		bool handleKeyboardInput();
 		bool handleMouseInput();
+		bool update();
 		void handleObjectMovement();
-		void deleteAllPointers();
+		void drawScreen();
+		void capFPS();
 	public:
 		CoreSimulation();
 		bool initialize();
