@@ -37,13 +37,13 @@ namespace kt::Core {
 		sf::Vector2u m_windowBounds = sf::Vector2u(kt::Defaults::WINDOW_WIDTH, kt::Defaults::WINDOW_HEIGHT);
 		sf::RenderWindow m_window{};
 
-		// Game Actors
-		kt::Text::TextEntity* m_movingText = nullptr;	// Text is a pointer because it requires instantiation with a font type object
-		kt::Text::TextEntity* m_cornerText = nullptr;
-		kt::Shapes::CircleEntity m_circle{};
-
 		// Necessary objects for Actors
 		sf::Font m_font{};
+
+		// Game Actors
+		kt::Text::TextEntity m_movingText{ m_font };
+		kt::Text::TextEntity m_cornerText{ m_font };
+		kt::Shapes::CircleEntity m_circle{};
 
 		// FPS time tracking
 		sf::Clock m_clock{};
