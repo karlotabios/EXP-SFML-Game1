@@ -24,6 +24,9 @@
 // Windows System commands, std::system
 #include <cstdlib>
 
+// ostringstream for formatted string concatenation
+#include <sstream>
+
 #if _DEBUG
 #define CONFIG_MODE "DEBUG MODE"
 #else
@@ -52,9 +55,17 @@ namespace kt::Core {
 
 		// Key-press tracking
 		bool m_isKeyFrictionPressed = false;
+		bool m_isKeyLagSpikePressed = false;
 
 		// Debugging features
+		unsigned int m_frameCounter = 0;
+		const float m_lagSpikeTime = kt::Defaults::LAG_SPIKE_TIME_SECONDS;
+		float m_totalSimulationSeconds = 0.0f;
+		float m_secondsCounter = 0.0f;
 		bool m_isFrictionEnabled = true;
+		bool m_isLagSpiking = false;
+
+		std::string m_averageFPSText;
 
 		// Helper functions
 		bool handleInput();
@@ -63,7 +74,8 @@ namespace kt::Core {
 		bool update();
 		void handleObjectMovement();
 		void drawScreen();
-		void capFPS();
+		void capUPS();
+		void trackFPS();
 	public:
 		CoreSimulation();
 		bool initialize();

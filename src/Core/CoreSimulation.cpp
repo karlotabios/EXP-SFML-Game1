@@ -54,15 +54,14 @@ namespace kt::Core {
 			// Handle input
 			this->handleInput();
 
-			// Handle object movement
-			this->handleObjectMovement();
-
 			// Update
 			this->update();
 
 			this->drawScreen();
 
-			this->capFPS();
+			this->capUPS();
+
+			this->trackFPS();
 
 			std::system("cls");
 		}
@@ -84,6 +83,9 @@ namespace kt::Core {
 		m_movingText.setString(textContent);
 		textContent = std::to_string(mouseLocalPosition.x) + ", " + std::to_string(mouseLocalPosition.y);
 		m_cornerText.setString(textContent);
+
+		// Handle object movement
+		this->handleObjectMovement();
 
 		return true;
 	}
@@ -107,19 +109,41 @@ namespace kt::Core {
 		m_window.display();
 	}
 
-	void CoreSimulation::capFPS() {
-		// FPS cap
-		sf::Time deltaTime = sf::seconds(kt::Defaults::TIMESTEP) - m_clock.restart();
-		if (deltaTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
-		{
-			std::cout << "[INFO] Capping FPS, deltaTime.asSeconds(): " << deltaTime.asSeconds() << std::endl;
-			sf::sleep(deltaTime);
+	void CoreSimulation::trackFPS() {
+		// Increment frame counter
+		m_frameCounter++;
+		m_secondsCounter += m_elapsedTime.asSeconds();
+		m_totalSimulationSeconds += m_elapsedTime.asSeconds();
+		if (m_secondsCounter >= 1) {
+			std::ostringstream oss;
+			oss << m_frameCounter / m_totalSimulationSeconds;
+			m_averageFPSText = oss.str();
+			m_secondsCounter = 0;
+		}
+		std::cout << "[INFO] Total simulation seconds: " << m_totalSimulationSeconds << std::endl;
+		std::cout << "[INFO] Frame count: " << m_frameCounter << std::endl;
+		std::cout << "[INFO] Average FPS: " << m_averageFPSText << std::endl;
+
+		return;
+	}
+
+	void CoreSimulation::capUPS() {
+		if (m_isLagSpiking) {
+			sf::sleep(sf::seconds(m_lagSpikeTime));
 		}
 
 		// Restarting time counter for FPS
-		m_elapsedTime = sf::seconds(0);
-		m_iterationTime = m_clock.restart();
-		m_elapsedTime += m_iterationTime;
+		m_elapsedTime = m_clock.restart();
+		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - m_elapsedTime;
+
+		if (sleepTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
+		{
+			std::cout << "[INFO] Capping UPS!" << std::endl;
+			sf::sleep(sleepTime);
+		}
+		else {
+			std::cout << "[INFO] Not capping UPS!" << std::endl;
+		}
 	}
 
 	bool CoreSimulation::handleInput() {
@@ -132,13 +156,16 @@ namespace kt::Core {
 	bool CoreSimulation::handleKeyboardInput() {
 		bool isKeyPressed = false;
 		bool isMoveKeyPressed = false;
+
+		// List of keys and what they are mapped to on the keyboard
 		const sf::Keyboard::Key keyUp = sf::Keyboard::Key::W;
 		const sf::Keyboard::Key keyLeft = sf::Keyboard::Key::A;
 		const sf::Keyboard::Key keyDown = sf::Keyboard::Key::S;
 		const sf::Keyboard::Key keyRight = sf::Keyboard::Key::D;
 		const sf::Keyboard::Key keyFriction = sf::Keyboard::Key::Space;
+		const sf::Keyboard::Key keyLagSpike = sf::Keyboard::Key::L;
 
-		sf::Keyboard::Key keys[] = { keyUp, keyLeft, keyDown, keyRight, keyFriction };
+		sf::Keyboard::Key keys[] = { keyUp, keyLeft, keyDown, keyRight, keyFriction, keyLagSpike };
 
 		sf::Vector2f appliedForce{ 0.0f, 0.0f };
 
@@ -165,14 +192,14 @@ namespace kt::Core {
 					break;
 				case keyFriction:
 					if (!m_isKeyFrictionPressed) {
-						if (!m_isFrictionEnabled) {
-							std::cout << "[INFO] Enabled Friction!" << std::endl;
-						}
-						else {
-							std::cout << "[INFO] Disabled Friction!" << std::endl;
-						}
 						m_isKeyFrictionPressed = true;
 						m_isFrictionEnabled = !m_isFrictionEnabled;
+					}
+					break;
+				case keyLagSpike:
+					if (!m_isKeyLagSpikePressed) {
+						m_isLagSpiking = !m_isLagSpiking;
+						m_isKeyLagSpikePressed = true;
 					}
 					break;
 				default:
@@ -181,6 +208,12 @@ namespace kt::Core {
 			}
 		}
 
+		std::string message;
+		message = m_isLagSpiking ? "[INFO] Lag Spike Enabled" : "[INFO] Lag Spike Disabled";
+		std::cout << message << std::endl;
+		message = m_isFrictionEnabled ? "[INFO] Enabled Friction!" : "[INFO] Disabled Friction!";
+		std::cout << message << std::endl;
+
 		if (isMoveKeyPressed) {
 			m_circle.addForce(appliedForce);
 		}
@@ -188,13 +221,20 @@ namespace kt::Core {
 		if ((!sf::Keyboard::isKeyPressed(keyFriction)) && (m_isKeyFrictionPressed)) {
 			m_isKeyFrictionPressed = false;
 		}
+
+		if (!sf::Keyboard::isKeyPressed(keyLagSpike)) {
+			m_isKeyLagSpikePressed = false;
+		}
 		return isKeyPressed;
 	}
 
 	bool CoreSimulation::handleMouseInput() {
+		// Capture mouse position
 		sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(m_window);
 
 		bool isMouseClicked = false;
+
+		// Check for mouse input
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
 			isMouseClicked = true;
 
@@ -208,6 +248,7 @@ namespace kt::Core {
 	}
 
 	void CoreSimulation::handleObjectMovement() {
+		// Apply physics to object
 		m_circle.move(m_isFrictionEnabled);
 
 		// Handle collision with screen bounds
