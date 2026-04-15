@@ -77,16 +77,16 @@ namespace kt::Core {
 		std::string m_averageFPSText;
 
 		// Helper functions
-		bool handleKeyboardInput();
-		bool handleMouseInput();
-		bool handleObjectMovement();
-		bool handleObjectOutOfBounds();
-		bool handleUI();
-		bool handleObjectState();
+		void handleKeyboardInput();
+		void handleMouseInput();
+		void handleObjectMovement();
+		void handleObjectOutOfBounds();
+		void handleUI();
+		void handleObjectState();
 		
 		// Primary functions
-		bool handleInput();
-		bool update();
+		void handleInput();
+		void update();
 		void drawScreen();
 		void capUPS();
 		void trackFPS();

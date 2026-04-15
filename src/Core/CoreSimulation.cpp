@@ -75,7 +75,7 @@ namespace kt::Core {
 		return true;
 	}
 
-	bool CoreSimulation::update() {
+	void CoreSimulation::update() {
 		// Handle object changes
 		this->handleObjectState();
 
@@ -85,7 +85,7 @@ namespace kt::Core {
 		// Handle UI
 		this->handleUI();
 
-		return true;
+		return;
 	}
 
 	void CoreSimulation::drawScreen() {
@@ -138,14 +138,13 @@ namespace kt::Core {
 		return;
 	}
 
-	bool CoreSimulation::handleInput() {
-		bool isSuccessful = false;
-		isSuccessful = this->handleKeyboardInput();
-		isSuccessful = this->handleMouseInput();
-		return isSuccessful;
+	void CoreSimulation::handleInput() {
+		this->handleKeyboardInput();
+		this->handleMouseInput();
+		return;
 	}
 
-	bool CoreSimulation::handleKeyboardInput() {
+	void CoreSimulation::handleKeyboardInput() {
 		bool isKeyPressed = false;
 		bool isMoveKeyPressed = false;
 
@@ -217,18 +216,15 @@ namespace kt::Core {
 		if (!sf::Keyboard::isKeyPressed(keyLagSpike)) {
 			m_isKeyLagSpikePressed = false;
 		}
-		return isKeyPressed;
+		return;
 	}
 
-	bool CoreSimulation::handleMouseInput() {
+	void CoreSimulation::handleMouseInput() {
 		// Capture mouse position
 		sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(m_window);
 
-		bool isMouseClicked = false;
-
 		// Check for mouse input
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)) {
-			isMouseClicked = true;
 
 			if (m_circle.contains(mouseLocalPosition)) {
 				m_circle.setPosition(sf::Vector2f(mouseLocalPosition.x, mouseLocalPosition.y));
@@ -236,19 +232,19 @@ namespace kt::Core {
 			}
 		}
 
-		return isMouseClicked;
+		return;
 	}
 
-	bool CoreSimulation::handleObjectMovement() {
+	void CoreSimulation::handleObjectMovement() {
 		// Apply physics to object
 		m_circle.move(m_Time.deltaTime, m_isFrictionEnabled);
 
 		this->handleObjectOutOfBounds();
 
-		return true;
+		return;
 	}
 
-	bool CoreSimulation::handleObjectOutOfBounds() {
+	void CoreSimulation::handleObjectOutOfBounds() {
 		// Handle collision with screen bounds
 		sf::Vector2f position = m_circle.getPosition();
 		float radius = m_circle.getRadius();
@@ -273,10 +269,10 @@ namespace kt::Core {
 			m_circle.setPosition({ m_circle.getPosition().x, kt::Defaults::WINDOW_HEIGHT - radius });
 		}
 
-		return true;
+		return;
 	}
 
-	bool CoreSimulation::handleUI() {
+	void CoreSimulation::handleUI() {
 		// Track relative mouse position in window
 		sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(m_window);
 
@@ -288,10 +284,10 @@ namespace kt::Core {
 		textContent = std::to_string(mouseLocalPosition.x) + ", " + std::to_string(mouseLocalPosition.y);
 		m_cornerText.setString(textContent);
 
-		return true;
+		return;
 	}
 
-	bool CoreSimulation::handleObjectState() {
+	void CoreSimulation::handleObjectState() {
 		if (m_isFrictionEnabled) {
 			m_circle.setFillColor(sf::Color::Red);
 		}
@@ -306,7 +302,7 @@ namespace kt::Core {
 			m_circle.setOutlineColor(sf::Color::Red);
 		}
 
-		return true;
+		return;
 	}
 
 	bool CoreSimulation::exitSimulation() {
