@@ -2,10 +2,11 @@
 
 namespace kt::Shapes {
 	CircleEntity::CircleEntity() : CircleShape() {
-		setRadius(150.0f);
+		setRadius(100.0f);
 		setOrigin(sf::Vector2f(getRadius(), getRadius()));
 		setFillColor(sf::Color::Red);
 		setOutlineColor(sf::Color::Red);
+		setOutlineThickness(1.0f);
 	}
 
 	void CircleEntity::move(const sf::Time& deltaTime, bool isFrictionEnabled) {

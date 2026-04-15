@@ -36,13 +36,10 @@ namespace kt::Core {
 		m_cornerText.setCharacterSize(fontSize);
 		m_cornerText.setFillColor(sf::Color::White);
 
-		// Creating custom circle
+		// Customizing circle
 		float posX = (float)rngDistribution(rng);
 		float posY = (float)rngDistribution(rng);
 		m_circle.setPosition(sf::Vector2f(posX, posY));
-
-		// Customizing circle
-		m_circle.setOutlineThickness(1.0f);
 
 		// Customizing rectangle
 		m_rectangle.setPosition(sf::Vector2f{ kt::Defaults::WINDOW_WIDTH / 2.0f, kt::Defaults::WINDOW_HEIGHT / 2.0f });
