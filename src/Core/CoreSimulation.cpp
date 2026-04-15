@@ -41,6 +41,9 @@ namespace kt::Core {
 		float posY = (float)rngDistribution(rng);
 		m_circle.setPosition(sf::Vector2f(posX, posY));
 
+		// Customizing circle
+		m_circle.setOutlineThickness(1.0f);
+
 		//Initialize deltaTime
 		m_Time.deltaTime = sf::seconds(std::max(kt::Defaults::TIMESTEP, m_Time.elapsedTime.asSeconds()));
 
@@ -72,11 +75,10 @@ namespace kt::Core {
 		return true;
 	}
 
-	bool CoreSimulation::exitSimulation() {
-		return true;	// WIP, thinking of changing this
-	}
-
 	bool CoreSimulation::update() {
+		// Handle object changes
+		this->handleObjectState();
+
 		// Handle object movement
 		this->handleObjectMovement();
 
@@ -105,6 +107,22 @@ namespace kt::Core {
 		m_window.display();
 	}
 
+	void CoreSimulation::capUPS() {
+		if (m_isLagSpikeEnabled) {
+			sf::sleep(sf::seconds(m_lagSeconds));
+		}
+
+		// Restarting time counter for FPS
+		m_Time.elapsedTime = m_Time.clock.restart();
+		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - m_Time.elapsedTime;
+		m_Time.deltaTime = sf::seconds(std::max(kt::Defaults::TIMESTEP, m_Time.elapsedTime.asSeconds()));
+
+		if (sleepTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
+		{
+			sf::sleep(sleepTime);
+		}
+	}
+
 	void CoreSimulation::trackFPS() {
 		// Increment frame counter
 		m_Time.frameCounter++;
@@ -121,22 +139,6 @@ namespace kt::Core {
 		std::cout << "[INFO] Average FPS: " << m_averageFPSText << std::endl;
 
 		return;
-	}
-
-	void CoreSimulation::capUPS() {
-		if (m_isLagSpikeEnabled) {
-			sf::sleep(sf::seconds(m_lagSeconds));
-		}
-
-		// Restarting time counter for FPS
-		m_Time.elapsedTime = m_Time.clock.restart();
-		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - m_Time.elapsedTime;
-		m_Time.deltaTime = sf::seconds(std::max(kt::Defaults::TIMESTEP, m_Time.elapsedTime.asSeconds()));
-
-		if (sleepTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
-		{
-			sf::sleep(sleepTime);
-		}
 	}
 
 	bool CoreSimulation::handleInput() {
@@ -290,6 +292,28 @@ namespace kt::Core {
 		m_cornerText.setString(textContent);
 
 		return true;
+	}
+
+	bool CoreSimulation::handleObjectState() {
+		if (m_isFrictionEnabled) {
+			m_circle.setFillColor(sf::Color::Red);
+		}
+		else {
+			m_circle.setFillColor(sf::Color::Green);
+		}
+
+		if (m_isLagSpikeEnabled) {
+			m_circle.setOutlineColor(sf::Color::Blue);
+		}
+		else {
+			m_circle.setOutlineColor(sf::Color::Red);
+		}
+
+		return true;
+	}
+
+	bool CoreSimulation::exitSimulation() {
+		return true;	// WIP, thinking of changing this
 	}
 
 	CoreSimulation::~CoreSimulation() {};

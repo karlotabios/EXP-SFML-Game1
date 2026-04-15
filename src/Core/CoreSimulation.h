@@ -72,6 +72,7 @@ namespace kt::Core {
 		bool handleObjectMovement();
 		bool handleObjectOutOfBounds();
 		bool handleUI();
+		bool handleObjectState();
 		
 		// Primary functions
 		bool handleInput();
