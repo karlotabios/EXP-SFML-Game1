@@ -14,6 +14,7 @@
 
 // kt::Shapes
 #include "../Shapes/CircleEntity.h"
+#include "../Shapes/RectangleEntity.h"
 
 // std::to_string()
 #include <string>
@@ -50,7 +51,7 @@ namespace kt::Core {
 		kt::Text::TextEntity m_movingText{ m_font };
 		kt::Text::TextEntity m_cornerText{ m_font };
 		kt::Shapes::CircleEntity m_circle{};
-		sf::RectangleShape m_rectangle{};
+		kt::Shapes::RectangleEntity m_rectangle{};
 
 		// Helper containers
 		std::array<sf::Drawable*, 4> m_drawableObjects = {
