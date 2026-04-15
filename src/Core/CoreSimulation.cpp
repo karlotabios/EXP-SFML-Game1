@@ -44,6 +44,11 @@ namespace kt::Core {
 		// Customizing circle
 		m_circle.setOutlineThickness(1.0f);
 
+		// Customizing rectangle
+		m_rectangle.setPosition(sf::Vector2f{ kt::Defaults::WINDOW_WIDTH / 2.0f, kt::Defaults::WINDOW_HEIGHT / 2.0f });
+		m_rectangle.setFillColor(sf::Color::Blue);
+		m_rectangle.setSize(sf::Vector2f{ 80.0f, 20.0f });
+
 		//Initialize deltaTime
 		m_Time.deltaTime = sf::seconds(std::max(kt::Defaults::TIMESTEP, m_Time.elapsedTime.asSeconds()));
 
@@ -95,13 +100,10 @@ namespace kt::Core {
 		// Clearing old frame from display
 		m_window.clear();
 
-		// Draw circle
-		m_window.draw(m_circle);
-
-		// Drawing text
-		m_window.draw(m_movingText);
-
-		m_window.draw(m_cornerText);
+		// Draw
+		for (auto element : m_drawableObjects) {
+			m_window.draw(*element);
+		}
 
 		// Finally display drawn objects
 		m_window.display();
