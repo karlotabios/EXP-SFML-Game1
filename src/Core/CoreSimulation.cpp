@@ -43,6 +43,11 @@ namespace kt::Core {
 
 		// Customizing rectangle
 		m_rectangle.setPosition(sf::Vector2f{ kt::Defaults::WINDOW_WIDTH / 2.0f, kt::Defaults::WINDOW_HEIGHT / 2.0f });
+		sf::Vector2f size = m_rectangle.getSize();
+		size.x = kt::Defaults::WINDOW_HEIGHT * 0.1f;
+		size.y = kt::Defaults::WINDOW_HEIGHT;
+		m_rectangle.setSize(size);
+		m_rectangle.setOrigin(sf::Vector2f{ size.x / 2.0f, size.y / 2.0f });
 
 		// Customizing geometry
 		m_centerDividerLine.setPosition(sf::Vector2f{ kt::Defaults::WINDOW_WIDTH / 2.0f, 0.0f });
@@ -309,6 +314,10 @@ namespace kt::Core {
 		else {
 			m_circle.setOutlineColor(sf::Color::Red);
 		}
+
+		auto test = kt::Utils::detectCollision(m_rectangle, m_circle);
+
+		std::cout << "[INFO/State] rectangle position: " << m_rectangle.getPosition().x << " " << m_rectangle.getPosition().y << std::endl;
 
 		return;
 	}

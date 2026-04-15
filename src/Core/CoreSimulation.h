@@ -31,6 +31,9 @@
 // kt::Frametime struct
 #include "../Utils/Frametime.h"
 
+// detectCollision function
+#include "../Utils/Math.h"
+
 #if _DEBUG
 #define CONFIG_MODE "DEBUG MODE"
 #else
@@ -52,6 +55,8 @@ namespace kt::Core {
 		kt::Text::TextEntity m_cornerText{ m_font };
 		kt::Shapes::CircleEntity m_circle{};
 		kt::Shapes::RectangleEntity m_rectangle{};
+
+		// Static geometry
 		sf::RectangleShape m_centerDividerLine{};
 
 		// Helper containers
