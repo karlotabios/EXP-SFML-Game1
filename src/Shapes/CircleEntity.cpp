@@ -8,7 +8,7 @@ namespace kt::Shapes {
 		setOutlineColor(sf::Color::Red);
 	}
 
-	void CircleEntity::move(bool isFrictionEnabled) {
+	void CircleEntity::move(const sf::Time& deltaTime, bool isFrictionEnabled) {
 		sf::Vector2f acceleration = this->getAcceleration();
 		sf::Vector2f velocity = this->getVelocity();
 		sf::Vector2f position = this->getPosition();
@@ -37,7 +37,7 @@ namespace kt::Shapes {
 		sf::Vector2f frictionForce{};
 		sf::Vector2f frictionDirection;
 
-		const float time = kt::Defaults::TIMESTEP;
+		const float time = deltaTime.asSeconds();
 		const float timeSquared = time * time;
 
 		if (isFrictionEnabled) {

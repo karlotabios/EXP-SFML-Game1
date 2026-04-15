@@ -30,7 +30,7 @@ namespace kt::Shapes {
 			return false;
 		}
 
-		void move(bool isFrictionEnabled);
+		void move(const sf::Time& deltaTime, bool isFrictionEnabled);
 		bool isMoving() const;
 		void addForce(const sf::Vector2f appliedForce);
 
