@@ -50,14 +50,18 @@ namespace kt::Core {
 		kt::Text::TextEntity m_movingText{ m_font };
 		kt::Text::TextEntity m_cornerText{ m_font };
 		kt::Shapes::CircleEntity m_circle{};
+
+		// Static geometry
 		sf::RectangleShape m_rectangle{};
+		sf::RectangleShape m_centerDividerLine{};
 
 		// Helper containers
-		std::array<sf::Drawable*, 4> m_drawableObjects = {
+		std::array<sf::Drawable*, 5> m_drawableObjects = {
 			&m_rectangle,
+			&m_centerDividerLine,
 			&m_circle,
 			&m_movingText,
-			&m_cornerText
+			&m_cornerText,
 		};
 
 		// Time tracking
