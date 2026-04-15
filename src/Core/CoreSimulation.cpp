@@ -60,10 +60,11 @@ namespace kt::Core {
 			// Update
 			this->update();
 
+			// Draw
 			this->drawScreen();
 
+			// Handle update and display frame rate
 			this->capUPS();
-
 			this->trackFPS();
 
 			std::system("cls");
@@ -76,19 +77,11 @@ namespace kt::Core {
 	}
 
 	bool CoreSimulation::update() {
-		// Track relative mouse position in window
-		sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(m_window);
-
-		// Set text string
-		std::string textContent;
-		sf::FloatRect boundingBox = m_movingText.getGlobalBounds();
-		textContent = std::to_string(boundingBox.position.x) + ", " + std::to_string(boundingBox.position.y);
-		m_movingText.setString(textContent);
-		textContent = std::to_string(mouseLocalPosition.x) + ", " + std::to_string(mouseLocalPosition.y);
-		m_cornerText.setString(textContent);
-
 		// Handle object movement
 		this->handleObjectMovement();
+
+		// Handle UI
+		this->handleUI();
 
 		return true;
 	}
@@ -247,10 +240,16 @@ namespace kt::Core {
 		return isMouseClicked;
 	}
 
-	void CoreSimulation::handleObjectMovement() {
+	bool CoreSimulation::handleObjectMovement() {
 		// Apply physics to object
 		m_circle.move(m_Time.deltaTime, m_isFrictionEnabled);
 
+		this->handleObjectOutOfBounds();
+
+		return true;
+	}
+
+	bool CoreSimulation::handleObjectOutOfBounds() {
 		// Handle collision with screen bounds
 		sf::Vector2f position = m_circle.getPosition();
 		float radius = m_circle.getRadius();
@@ -275,7 +274,22 @@ namespace kt::Core {
 			m_circle.setPosition({ m_circle.getPosition().x, kt::Defaults::WINDOW_HEIGHT - radius });
 		}
 
-		return;
+		return true;
+	}
+
+	bool CoreSimulation::handleUI() {
+		// Track relative mouse position in window
+		sf::Vector2i mouseLocalPosition = sf::Mouse::getPosition(m_window);
+
+		// Set text string
+		std::string textContent;
+		sf::FloatRect boundingBox = m_movingText.getGlobalBounds();
+		textContent = std::to_string(boundingBox.position.x) + ", " + std::to_string(boundingBox.position.y);
+		m_movingText.setString(textContent);
+		textContent = std::to_string(mouseLocalPosition.x) + ", " + std::to_string(mouseLocalPosition.y);
+		m_cornerText.setString(textContent);
+
+		return true;
 	}
 
 	CoreSimulation::~CoreSimulation() {};
