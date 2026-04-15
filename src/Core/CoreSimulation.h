@@ -14,6 +14,7 @@
 
 // kt::Shapes
 #include "../Shapes/CircleEntity.h"
+#include "../Shapes/RectangleEntity.h"
 
 // std::to_string()
 #include <string>
@@ -50,9 +51,7 @@ namespace kt::Core {
 		kt::Text::TextEntity m_movingText{ m_font };
 		kt::Text::TextEntity m_cornerText{ m_font };
 		kt::Shapes::CircleEntity m_circle{};
-
-		// Static geometry
-		sf::RectangleShape m_rectangle{};
+		kt::Shapes::RectangleEntity m_rectangle{};
 		sf::RectangleShape m_centerDividerLine{};
 
 		// Helper containers
@@ -80,16 +79,16 @@ namespace kt::Core {
 		std::string m_averageFPSText;
 
 		// Helper functions
-		bool handleKeyboardInput();
-		bool handleMouseInput();
-		bool handleObjectMovement();
-		bool handleObjectOutOfBounds();
-		bool handleUI();
-		bool handleObjectState();
+		void handleKeyboardInput();
+		void handleMouseInput();
+		void handleObjectMovement();
+		void handleObjectOutOfBounds();
+		void handleUI();
+		void handleObjectState();
 		
 		// Primary functions
-		bool handleInput();
-		bool update();
+		void handleInput();
+		void update();
 		void drawScreen();
 		void capUPS();
 		void trackFPS();
