@@ -44,6 +44,11 @@ namespace kt::Core {
 		// Customizing rectangle
 		m_rectangle.setPosition(sf::Vector2f{ kt::Defaults::WINDOW_WIDTH / 2.0f, kt::Defaults::WINDOW_HEIGHT / 2.0f });
 
+		// Customizing geometry
+		m_centerDividerLine.setPosition(sf::Vector2f{ kt::Defaults::WINDOW_WIDTH / 2.0f, 0.0f });
+		m_centerDividerLine.setFillColor(sf::Color::White);
+		m_centerDividerLine.setSize(sf::Vector2f{ 1.0f, kt::Defaults::WINDOW_HEIGHT });
+
 		//Initialize deltaTime
 		m_Time.deltaTime = sf::seconds(std::max(kt::Defaults::TIMESTEP, m_Time.elapsedTime.asSeconds()));
 
