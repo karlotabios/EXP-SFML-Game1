@@ -16,5 +16,5 @@ namespace kt::Defaults {
 	static const float KINETIC_FRICTION_COEF = 0.5f;	// Values ideally clamped from 0.0f to 1.0f
 	static const float GRAVITY_ACCELERATION = 1000.0f;
 	static const sf::Vector2f PLAYER_MOVEMENT_FORCE{ 10000.0f, 10000.0f };
-	static const float LAG_SPIKE_TIME_SECONDS = 1.1f;
+	static const float LAG_SPIKE_TIME_SECONDS = 1.0f;
 }

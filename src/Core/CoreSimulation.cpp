@@ -41,6 +41,9 @@ namespace kt::Core {
 		float posY = (float)rngDistribution(rng);
 		m_circle.setPosition(sf::Vector2f(posX, posY));
 
+		//Initialize deltaTime
+		m_Time.deltaTime = sf::seconds(std::max(kt::Defaults::TIMESTEP, m_Time.elapsedTime.asSeconds()));
+
 		return true;
 	}
 
@@ -111,38 +114,35 @@ namespace kt::Core {
 
 	void CoreSimulation::trackFPS() {
 		// Increment frame counter
-		m_frameCounter++;
-		m_secondsCounter += m_elapsedTime.asSeconds();
-		m_totalSimulationSeconds += m_elapsedTime.asSeconds();
+		m_Time.frameCounter++;
+		m_secondsCounter += m_Time.deltaTime.asSeconds();
+		m_Time.totalTime += m_Time.deltaTime;
 		if (m_secondsCounter >= 1) {
 			std::ostringstream oss;
-			oss << m_frameCounter / m_totalSimulationSeconds;
+			oss << m_Time.frameCounter / m_Time.totalTime.asSeconds();
 			m_averageFPSText = oss.str();
 			m_secondsCounter = 0;
 		}
-		std::cout << "[INFO] Total simulation seconds: " << m_totalSimulationSeconds << std::endl;
-		std::cout << "[INFO] Frame count: " << m_frameCounter << std::endl;
+		std::cout << "[INFO] Total simulation seconds: " << m_Time.totalTime.asSeconds() << std::endl;
+		std::cout << "[INFO] Frame count: " << m_Time.frameCounter << std::endl;
 		std::cout << "[INFO] Average FPS: " << m_averageFPSText << std::endl;
 
 		return;
 	}
 
 	void CoreSimulation::capUPS() {
-		if (m_isLagSpiking) {
-			sf::sleep(sf::seconds(m_lagSpikeTime));
+		if (m_isLagSpikeEnabled) {
+			sf::sleep(sf::seconds(m_lagSeconds));
 		}
 
 		// Restarting time counter for FPS
-		m_elapsedTime = m_clock.restart();
-		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - m_elapsedTime;
+		m_Time.elapsedTime = m_Time.clock.restart();
+		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - m_Time.elapsedTime;
+		m_Time.deltaTime = sf::seconds(std::max(kt::Defaults::TIMESTEP, m_Time.elapsedTime.asSeconds()));
 
 		if (sleepTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
 		{
-			std::cout << "[INFO] Capping UPS!" << std::endl;
 			sf::sleep(sleepTime);
-		}
-		else {
-			std::cout << "[INFO] Not capping UPS!" << std::endl;
 		}
 	}
 
@@ -198,7 +198,7 @@ namespace kt::Core {
 					break;
 				case keyLagSpike:
 					if (!m_isKeyLagSpikePressed) {
-						m_isLagSpiking = !m_isLagSpiking;
+						m_isLagSpikeEnabled = !m_isLagSpikeEnabled;
 						m_isKeyLagSpikePressed = true;
 					}
 					break;
@@ -209,7 +209,7 @@ namespace kt::Core {
 		}
 
 		std::string message;
-		message = m_isLagSpiking ? "[INFO] Lag Spike Enabled" : "[INFO] Lag Spike Disabled";
+		message = m_isLagSpikeEnabled ? "[INFO] Lag Spike Enabled" : "[INFO] Lag Spike Disabled";
 		std::cout << message << std::endl;
 		message = m_isFrictionEnabled ? "[INFO] Enabled Friction!" : "[INFO] Disabled Friction!";
 		std::cout << message << std::endl;
@@ -249,7 +249,7 @@ namespace kt::Core {
 
 	void CoreSimulation::handleObjectMovement() {
 		// Apply physics to object
-		m_circle.move(m_isFrictionEnabled);
+		m_circle.move(m_Time.deltaTime, m_isFrictionEnabled);
 
 		// Handle collision with screen bounds
 		sf::Vector2f position = m_circle.getPosition();

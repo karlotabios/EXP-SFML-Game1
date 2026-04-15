@@ -27,6 +27,9 @@
 // ostringstream for formatted string concatenation
 #include <sstream>
 
+// kt::Frametime struct
+#include "../Utils/Frametime.h"
+
 #if _DEBUG
 #define CONFIG_MODE "DEBUG MODE"
 #else
@@ -48,22 +51,18 @@ namespace kt::Core {
 		kt::Text::TextEntity m_cornerText{ m_font };
 		kt::Shapes::CircleEntity m_circle{};
 
-		// FPS time tracking
-		sf::Clock m_clock{};
-		sf::Time m_elapsedTime{};
-		sf::Time m_iterationTime{};
+		// Time tracking
+		kt::Utils::Frametime m_Time{};
 
 		// Key-press tracking
 		bool m_isKeyFrictionPressed = false;
 		bool m_isKeyLagSpikePressed = false;
 
 		// Debugging features
-		unsigned int m_frameCounter = 0;
-		const float m_lagSpikeTime = kt::Defaults::LAG_SPIKE_TIME_SECONDS;
-		float m_totalSimulationSeconds = 0.0f;
+		const float m_lagSeconds = kt::Defaults::LAG_SPIKE_TIME_SECONDS;
 		float m_secondsCounter = 0.0f;
 		bool m_isFrictionEnabled = true;
-		bool m_isLagSpiking = false;
+		bool m_isLagSpikeEnabled = false;
 
 		std::string m_averageFPSText;
 
