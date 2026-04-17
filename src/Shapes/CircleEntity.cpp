@@ -1,3 +1,5 @@
+#include "../Globals/defaults.h"
+
 #include "CircleEntity.h"
 
 namespace kt::Shapes {
@@ -43,9 +45,9 @@ namespace kt::Shapes {
 
 		if (isFrictionEnabled) {
 			// hypothetical normal force, the floor is the screen below all drawn objects
-			const float normalForceMagnitude = kt::Defaults::GRAVITY_ACCELERATION * mass;
-			const float staticFrictionMagnitude = kt::Defaults::STATIC_FRICTION_COEF * normalForceMagnitude;
-			const float kineticFrictionMagnitude = kt::Defaults::KINETIC_FRICTION_COEF * normalForceMagnitude;
+			const float normalForceMagnitude = kt::Globals::GRAVITY_ACCELERATION * mass;
+			const float staticFrictionMagnitude = kt::Globals::STATIC_FRICTION_COEF * normalForceMagnitude;
+			const float kineticFrictionMagnitude = kt::Globals::KINETIC_FRICTION_COEF * normalForceMagnitude;
 
 			if (m_isMoving) {
 				std::cout << "[INFO/kinetic friction] Circle is moving, kinetic friction here!" << std::endl;

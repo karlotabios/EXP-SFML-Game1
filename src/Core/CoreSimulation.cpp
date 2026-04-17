@@ -5,20 +5,20 @@ namespace kt::Core {
 
 	bool CoreSimulation::initialize() {
 		sf::ContextSettings settings{};
-		settings.antiAliasingLevel = kt::Defaults::ANTI_ALIASING_LEVEL;
+		settings.antiAliasingLevel = kt::Globals::ANTI_ALIASING_LEVEL;
 
 		m_window = sf::RenderWindow(sf::VideoMode(m_windowBounds), CONFIG_MODE, sf::Style::Default, sf::State::Windowed, settings);
 
 		std::default_random_engine rng;
-		std::uniform_real_distribution<double> rngDistribution(1, kt::Defaults::WINDOW_HEIGHT);
+		std::uniform_real_distribution<double> rngDistribution(1, kt::Globals::WINDOW_HEIGHT);
 		
 		// Getting font from file
-		if (!m_font.openFromFile(kt::Defaults::FONT_DIR)) {
-			std::cout << "ERROR: Font not found at path " << kt::Defaults::FONT_DIR << "\n";
+		if (!m_font.openFromFile(kt::Globals::FONT_DIR)) {
+			std::cout << "ERROR: Font not found at path " << kt::Globals::FONT_DIR << "\n";
 			return false;
 		}
 		else {
-			std::cout << "SUCCESS: Font found at path: " << kt::Defaults::FONT_DIR << "\n";
+			std::cout << "SUCCESS: Font found at path: " << kt::Globals::FONT_DIR << "\n";
 		}
 
 		m_font.setSmooth(true);
@@ -26,7 +26,7 @@ namespace kt::Core {
 		// Creating text from font
 		m_movingText.setFont(m_font);
 		unsigned int fontSize = 24;
-		m_movingText.setPosition(sf::Vector2f(kt::Defaults::WINDOW_WIDTH / 2, kt::Defaults::WINDOW_HEIGHT / 2));
+		m_movingText.setPosition(sf::Vector2f(kt::Globals::WINDOW_WIDTH / 2, kt::Globals::WINDOW_HEIGHT / 2));
 		m_movingText.setCharacterSize(fontSize);
 		sf::Color grey(255, 255, 255, 60);	// R,G,B,Alpha
 		m_movingText.setFillColor(grey);
@@ -42,20 +42,24 @@ namespace kt::Core {
 		m_circle.setPosition(sf::Vector2f(posX, posY));
 
 		// Customizing rectangle
-		m_rectangle.setPosition(sf::Vector2f{ kt::Defaults::WINDOW_WIDTH / 2.0f, kt::Defaults::WINDOW_HEIGHT / 2.0f });
-		sf::Vector2f size = m_rectangle.getSize();
-		size.x = kt::Defaults::WINDOW_HEIGHT * 0.1f;
-		size.y = kt::Defaults::WINDOW_HEIGHT;
+		m_rectangle.setPosition(sf::Vector2f{ kt::Globals::WINDOW_WIDTH / 2.0f, kt::Globals::WINDOW_HEIGHT / 2.0f });
+		/*sf::Vector2f size = m_rectangle.getSize();
+		size.x = kt::Globals::WINDOW_HEIGHT * 0.1f;
+		size.y = kt::Globals::WINDOW_HEIGHT;
 		m_rectangle.setSize(size);
-		m_rectangle.setOrigin(sf::Vector2f{ size.x / 2.0f, size.y / 2.0f });
+		m_rectangle.setOrigin(sf::Vector2f{ size.x / 2.0f, size.y / 2.0f });*/
 
 		// Customizing geometry
-		m_centerDividerLine.setPosition(sf::Vector2f{ kt::Defaults::WINDOW_WIDTH / 2.0f, 0.0f });
-		m_centerDividerLine.setFillColor(sf::Color::White);
-		m_centerDividerLine.setSize(sf::Vector2f{ 1.0f, kt::Defaults::WINDOW_HEIGHT });
+		m_centerVerticalLine.setPosition(sf::Vector2f{ kt::Globals::WINDOW_WIDTH / 2.0f, 0.0f });
+		m_centerVerticalLine.setFillColor(sf::Color::White);
+		m_centerVerticalLine.setSize(sf::Vector2f{ 1.0f, kt::Globals::WINDOW_HEIGHT });
+
+		m_centerHorizontalLine.setPosition(sf::Vector2f{ 0.0f, kt::Globals::WINDOW_HEIGHT / 2.0f });
+		m_centerHorizontalLine.setFillColor(sf::Color::White);
+		m_centerHorizontalLine.setSize(sf::Vector2f{ kt::Globals::WINDOW_WIDTH, 1.0f });
 
 		//Initialize deltaTime
-		m_Time.deltaTime = sf::seconds(std::max(kt::Defaults::TIMESTEP, m_Time.elapsedTime.asSeconds()));
+		m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.elapsedTime.asSeconds()));
 
 		return true;
 	}
@@ -121,8 +125,8 @@ namespace kt::Core {
 
 		// Restarting time counter for FPS
 		m_Time.elapsedTime = m_Time.clock.restart();
-		sf::Time sleepTime = sf::seconds(kt::Defaults::TIMESTEP) - m_Time.elapsedTime;
-		m_Time.deltaTime = sf::seconds(std::max(kt::Defaults::TIMESTEP, m_Time.elapsedTime.asSeconds()));
+		sf::Time sleepTime = sf::seconds(kt::Globals::TIMESTEP) - m_Time.elapsedTime;
+		m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.elapsedTime.asSeconds()));
 
 		if (sleepTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
 		{
@@ -177,19 +181,19 @@ namespace kt::Core {
 				switch (key) {
 				case keyUp:
 					isMoveKeyPressed = true;
-					appliedForce.y += -kt::Defaults::PLAYER_MOVEMENT_FORCE.y;
+					appliedForce.y += -kt::Globals::PLAYER_MOVEMENT_FORCE.y;
 					break;
 				case keyDown:
 					isMoveKeyPressed = true;
-					appliedForce.y += kt::Defaults::PLAYER_MOVEMENT_FORCE.y;
+					appliedForce.y += kt::Globals::PLAYER_MOVEMENT_FORCE.y;
 					break;
 				case keyLeft:
 					isMoveKeyPressed = true;
-					appliedForce.x += -kt::Defaults::PLAYER_MOVEMENT_FORCE.x;
+					appliedForce.x += -kt::Globals::PLAYER_MOVEMENT_FORCE.x;
 					break;
 				case keyRight:
 					isMoveKeyPressed = true;
-					appliedForce.x += kt::Defaults::PLAYER_MOVEMENT_FORCE.x;
+					appliedForce.x += kt::Globals::PLAYER_MOVEMENT_FORCE.x;
 					break;
 				case keyFriction:
 					if (!m_isKeyFrictionPressed) {
@@ -265,9 +269,9 @@ namespace kt::Core {
 		float leftEdge = position.x - radius;
 		float topEdge = position.y - radius;
 		float bottomEdge = position.y + radius;
-		if (rightEdge >= kt::Defaults::WINDOW_WIDTH) {
+		if (rightEdge >= kt::Globals::WINDOW_WIDTH) {
 			m_circle.setVelocity({ -m_circle.getVelocity().x, m_circle.getVelocity().y });
-			m_circle.setPosition({ kt::Defaults::WINDOW_WIDTH - radius, m_circle.getPosition().y });
+			m_circle.setPosition({ kt::Globals::WINDOW_WIDTH - radius, m_circle.getPosition().y });
 		}
 		if (leftEdge <= 0.0f) {
 			m_circle.setVelocity({ -m_circle.getVelocity().x, m_circle.getVelocity().y });
@@ -277,9 +281,9 @@ namespace kt::Core {
 			m_circle.setVelocity({ m_circle.getVelocity().x, -m_circle.getVelocity().y });
 			m_circle.setPosition({ m_circle.getPosition().x, radius });
 		}
-		if (bottomEdge >= kt::Defaults::WINDOW_HEIGHT) {
+		if (bottomEdge >= kt::Globals::WINDOW_HEIGHT) {
 			m_circle.setVelocity({ m_circle.getVelocity().x, -m_circle.getVelocity().y });
-			m_circle.setPosition({ m_circle.getPosition().x, kt::Defaults::WINDOW_HEIGHT - radius });
+			m_circle.setPosition({ m_circle.getPosition().x, kt::Globals::WINDOW_HEIGHT - radius });
 		}
 
 		return;
@@ -315,7 +319,21 @@ namespace kt::Core {
 			m_circle.setOutlineColor(sf::Color::Red);
 		}
 
-		auto test = kt::Utils::detectCollision(m_rectangle, m_circle);
+		// Testing stuff
+		{
+			// float deltaSize = 10.0f * m_Time.deltaTime.asSeconds();
+			// m_rectangle.setSize(sf::Vector2f{ m_rectangle.getSize().x + deltaSize, m_rectangle.getSize().y + deltaSize });
+
+			auto test = kt::Utils::detectCollision(m_rectangle, m_circle);
+			if (test != std::nullopt) {
+				m_circle.setFillColor(sf::Color(255, 0, 0, 100));
+				m_circle.setOutlineColor(sf::Color(255, 0, 0, 100));
+			}
+			else {
+				m_circle.setFillColor(sf::Color::Red);
+				m_circle.setFillColor(sf::Color::Red);
+			}
+		}
 
 		std::cout << "[INFO/State] rectangle position: " << m_rectangle.getPosition().x << " " << m_rectangle.getPosition().y << std::endl;
 

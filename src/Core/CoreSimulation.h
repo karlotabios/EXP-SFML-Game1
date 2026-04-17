@@ -10,7 +10,7 @@
 #include "../Text/Text.h"
 
 // Hardcoded values
-#include "../Defaults/Defaults.h"
+#include "../Globals/Defaults.h"
 
 // kt::Shapes
 #include "../Shapes/CircleEntity.h"
@@ -44,7 +44,7 @@ namespace kt::Core {
 	class CoreSimulation {
 	private:
 		// Simulation viewport
-		sf::Vector2u m_windowBounds = sf::Vector2u(kt::Defaults::WINDOW_WIDTH, kt::Defaults::WINDOW_HEIGHT);
+		sf::Vector2u m_windowBounds = sf::Vector2u(kt::Globals::WINDOW_WIDTH, kt::Globals::WINDOW_HEIGHT);
 		sf::RenderWindow m_window{};
 
 		// Necessary objects for Actors
@@ -57,12 +57,14 @@ namespace kt::Core {
 		kt::Shapes::RectangleEntity m_rectangle{};
 
 		// Static geometry
-		sf::RectangleShape m_centerDividerLine{};
+		sf::RectangleShape m_centerVerticalLine{};
+		sf::RectangleShape m_centerHorizontalLine{};
 
 		// Helper containers
-		std::array<sf::Drawable*, 5> m_drawableObjects = {
+		std::vector<sf::Drawable*> m_drawableObjects = {
 			&m_rectangle,
-			&m_centerDividerLine,
+			&m_centerVerticalLine,
+			&m_centerHorizontalLine,
 			&m_circle,
 			&m_movingText,
 			&m_cornerText,
@@ -76,7 +78,7 @@ namespace kt::Core {
 		bool m_isKeyLagSpikePressed = false;
 
 		// Debugging features
-		const float m_lagSeconds = kt::Defaults::LAG_SPIKE_TIME_SECONDS;
+		const float m_lagSeconds = kt::Globals::LAG_SPIKE_TIME_SECONDS;
 		float m_secondsCounter = 0.0f;
 		bool m_isFrictionEnabled = true;
 		bool m_isLagSpikeEnabled = false;

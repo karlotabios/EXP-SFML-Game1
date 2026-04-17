@@ -1,7 +1,5 @@
 #pragma once
 
-//#include "../Defaults/Defaults.h"
-
 #include <SFML/Graphics.hpp>
 
 namespace kt::Physical {

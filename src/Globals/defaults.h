@@ -5,7 +5,7 @@
 // std::clamp
 #include <algorithm>
 
-namespace kt::Defaults {
+namespace kt::Globals {
 	static const unsigned int ANTI_ALIASING_LEVEL = 8;
 	static const float FPS = 60.0f;
 	static const float TIMESTEP = (1.0f / FPS);

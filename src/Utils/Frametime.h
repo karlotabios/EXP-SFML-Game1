@@ -2,8 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "../Defaults/Defaults.h"
-
 namespace kt::Utils {
 	// Frametime is a plain-old-data struct intended to track frame and time related data within a simulation loop
 	struct Frametime {
