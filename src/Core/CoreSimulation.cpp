@@ -43,11 +43,11 @@ namespace kt::Core {
 
 		// Customizing rectangle
 		m_rectangle.setPosition(sf::Vector2f{ kt::Globals::WINDOW_WIDTH / 2.0f, kt::Globals::WINDOW_HEIGHT / 2.0f });
-		/*sf::Vector2f size = m_rectangle.getSize();
+		sf::Vector2f size = m_rectangle.getSize();
 		size.x = kt::Globals::WINDOW_HEIGHT * 0.1f;
 		size.y = kt::Globals::WINDOW_HEIGHT;
 		m_rectangle.setSize(size);
-		m_rectangle.setOrigin(sf::Vector2f{ size.x / 2.0f, size.y / 2.0f });*/
+		m_rectangle.setOrigin(sf::Vector2f{ size.x / 2.0f, size.y / 2.0f });
 
 		// Customizing geometry
 		m_centerVerticalLine.setPosition(sf::Vector2f{ kt::Globals::WINDOW_WIDTH / 2.0f, 0.0f });
@@ -319,23 +319,18 @@ namespace kt::Core {
 			m_circle.setOutlineColor(sf::Color::Red);
 		}
 
-		// Testing stuff
-		{
-			// float deltaSize = 10.0f * m_Time.deltaTime.asSeconds();
-			// m_rectangle.setSize(sf::Vector2f{ m_rectangle.getSize().x + deltaSize, m_rectangle.getSize().y + deltaSize });
-
-			auto test = kt::Utils::detectCollision(m_rectangle, m_circle);
-			if (test != std::nullopt) {
-				m_circle.setFillColor(sf::Color(255, 0, 0, 100));
-				m_circle.setOutlineColor(sf::Color(255, 0, 0, 100));
-			}
-			else {
-				m_circle.setFillColor(sf::Color::Red);
-				m_circle.setFillColor(sf::Color::Red);
-			}
+		auto collisionData = kt::Utils::detectCollision(m_rectangle, m_circle);
+		if (collisionData != std::nullopt) {
+			m_circle.makeTransparent();
+			sf::Vector2f positionDelta = collisionData->collisionNormalDirection * collisionData->overlapMagnitude;
+			sf::Vector2f oldPosition = m_circle.getPosition();
+			sf::Vector2f newPosition = m_circle.getPosition() + positionDelta;
+			m_circle.setVelocity({ 0.0f,0.0f });	// Temporary workaround
+			m_circle.setPosition(newPosition);
 		}
-
-		std::cout << "[INFO/State] rectangle position: " << m_rectangle.getPosition().x << " " << m_rectangle.getPosition().y << std::endl;
+		else {
+			m_circle.makeOpaque();
+		}
 
 		return;
 	}
