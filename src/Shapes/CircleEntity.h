@@ -30,6 +30,8 @@ namespace kt::Shapes {
 		void move(const sf::Time& deltaTime, bool isFrictionEnabled);
 		bool isMoving() const;
 		void addForce(const sf::Vector2f appliedForce);
+		void makeTransparent();
+		void makeOpaque();
 
 		virtual ~CircleEntity();
 	};

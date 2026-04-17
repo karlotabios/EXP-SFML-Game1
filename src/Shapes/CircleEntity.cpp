@@ -133,5 +133,25 @@ namespace kt::Shapes {
 		return;
 	}
 
+	void CircleEntity::makeTransparent() {
+		sf::Color color;
+		color = this->getFillColor();
+		color.a = 100;
+		this->setFillColor(color);
+		color = this->getOutlineColor();
+		color.a = 100;
+		this->setOutlineColor(color);
+	}
+
+	void CircleEntity::makeOpaque() {
+		sf::Color color;
+		color = this->getFillColor();
+		color.a = 255;
+		this->setFillColor(color);
+		color = this->getOutlineColor();
+		color.a = 100;
+		this->setOutlineColor(color);
+	}
+
 	CircleEntity::~CircleEntity() {};
 }
