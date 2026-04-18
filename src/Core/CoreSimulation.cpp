@@ -1,7 +1,7 @@
 #include "CoreSimulation.h"
 
 namespace kt::Core {
-	CoreSimulation::CoreSimulation() {};
+	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_DIR) {};
 
 	bool CoreSimulation::initialize() {
 		sf::ContextSettings settings{};
@@ -17,8 +17,15 @@ namespace kt::Core {
 			std::cout << "ERROR: Font not found at path " << kt::Globals::FONT_DIR << "\n";
 			return false;
 		}
+
+		//Initialize UI Icon
+		if (!m_lagTexture.loadFromFile(kt::Globals::LAG_IMAGE_DIR)) {
+			std::cout << "ERROR: Image file not found at path " << kt::Globals::LAG_IMAGE_DIR << "\n";
+			return false;
+		}
 		else {
-			std::cout << "SUCCESS: Font found at path: " << kt::Globals::FONT_DIR << "\n";
+			m_lagSprite.setTexture(m_lagTexture);
+			m_lagSprite.setScale({ 0.2f, 0.2f });
 		}
 
 		m_font.setSmooth(true);
@@ -35,6 +42,7 @@ namespace kt::Core {
 		m_cornerText.setFont(m_font);
 		m_cornerText.setCharacterSize(fontSize);
 		m_cornerText.setFillColor(sf::Color::White);
+		m_cornerText.setPosition({ 0.0f, kt::Globals::WINDOW_HEIGHT - 30.0f });
 
 		// Customizing circle
 		float posX = (float)rngDistribution(rng);
@@ -73,7 +81,7 @@ namespace kt::Core {
 
 			// Handle input
 			this->handleInput();
-
+			
 			// Update
 			this->update();
 
@@ -90,6 +98,9 @@ namespace kt::Core {
 	}
 
 	void CoreSimulation::update() {
+		// Handle Game changes
+		this->handleSimulationState();
+
 		// Handle object changes
 		this->handleObjectState();
 
@@ -107,11 +118,11 @@ namespace kt::Core {
 			return;
 		}
 		// Clearing old frame from display
-		m_window.clear();
+		m_window.clear(backgroundColor);
 
-		// Draw
-		for (auto element : m_drawableObjects) {
-			m_window.draw(*element);
+		// Draw objects
+		for (auto& object : m_drawableObjects) {
+			m_window.draw(*object);
 		}
 
 		// Finally display drawn objects
@@ -304,21 +315,27 @@ namespace kt::Core {
 		return;
 	}
 
-	void CoreSimulation::handleObjectState() {
+	void CoreSimulation::handleSimulationState() {
+		// Temporary repeated handling of states here. TODO: make helper functions to handle this only once every time change happens
 		if (m_isFrictionEnabled) {
-			m_circle.setFillColor(sf::Color::Red);
+			backgroundColor = sf::Color::Black;
 		}
 		else {
-			m_circle.setFillColor(sf::Color::Green);
+			backgroundColor = sf::Color(10U, 30U, 60U, 255U);
 		}
 
 		if (m_isLagSpikeEnabled) {
-			m_circle.setOutlineColor(sf::Color::Blue);
+			m_lagSprite.setScale({ 0.2f, 0.2f });
 		}
 		else {
-			m_circle.setOutlineColor(sf::Color::Red);
+			m_lagSprite.setScale({ 0.0f, 0.0f });
 		}
 
+		return;
+	}
+
+	void CoreSimulation::handleObjectState() {
+		// Collision detection
 		auto collisionData = kt::Utils::detectCollision(m_rectangle, m_circle);
 		if (collisionData != std::nullopt) {
 			m_circle.makeTransparent();
