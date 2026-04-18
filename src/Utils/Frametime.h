@@ -7,8 +7,8 @@ namespace kt::Utils {
 	struct Frametime {
 		unsigned int frameCounter{};
 		sf::Clock clock{};
-		sf::Time elapsedTime{};
-		sf::Time deltaTime{};
+		sf::Time elapsedTime{};		// Actual time per frame
+		sf::Time deltaTime{};		// Amount of time to be used in a single tick of simulation
 		sf::Time totalTime{};
 	};
 }
