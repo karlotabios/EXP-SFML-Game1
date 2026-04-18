@@ -40,8 +40,7 @@ namespace kt::Shapes {
 		sf::Vector2f frictionForce{};
 		sf::Vector2f frictionDirection;
 
-		const float time = deltaTime.asSeconds();
-		const float timeSquared = time * time;
+		const float timeSquared = deltaTime.asSeconds() * deltaTime.asSeconds();
 
 		if (isFrictionEnabled) {
 			// hypothetical normal force, the floor is the screen below all drawn objects
@@ -56,11 +55,11 @@ namespace kt::Shapes {
 				sf::Vector2f frictionAcceleration = frictionForce / mass;
 				std::cout << "[INFO/kinetic friction] velocity.length() ==> " << velocity.length() << std::endl;
 				std::cout << "[INFO/kinetic friction] frictionAcceleration.length() ==> " << frictionAcceleration.length() << std::endl;
-				if (velocity.length() <= (frictionAcceleration.length() * time)) {
+				if (velocity.length() <= (frictionAcceleration.length() * deltaTime.asSeconds())) {
 					velocity = { 0.0f, 0.0f };
 				}
 				else {
-					velocity = velocity + (frictionAcceleration * time);
+					velocity = velocity + (frictionAcceleration * deltaTime.asSeconds());
 				}
 			}
 			else {
@@ -105,11 +104,11 @@ namespace kt::Shapes {
 
 		// kinematics equation:
 		// x_f = x_0 + (v_0 * t) + ((a * t^2) / 2)
-		position = position + (velocity * time) + ((acceleration * timeSquared) / 2.0f);
+		position = position + (velocity * deltaTime.asSeconds()) + ((acceleration * timeSquared) / 2.0f);
 
 		// kinematics equation:
 		// v_f = v_0 + at
-		velocity = velocity + (acceleration * time);
+		velocity = velocity + (acceleration * deltaTime.asSeconds());
 
 		if (velocity.length() != 0) {
 			std::cout << "[INFO/velocity] velocity.normalized();" << std::endl;
