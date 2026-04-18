@@ -44,44 +44,58 @@ namespace kt::Core {
 	class CoreSimulation {
 	private:
 		// Simulation viewport
-		sf::Vector2u m_windowBounds = sf::Vector2u(kt::Globals::WINDOW_WIDTH, kt::Globals::WINDOW_HEIGHT);
+		sf::Vector2u m_windowBounds{ sf::Vector2u(kt::Globals::WINDOW_WIDTH, kt::Globals::WINDOW_HEIGHT) };
 		sf::RenderWindow m_window{};
+		sf::Color backgroundColor{};
 
-		// Necessary objects for Actors
+		// Simulation tick rate
+		const float tickRate{ 60.0f };
+
+		// Necessary objects for actors
 		sf::Font m_font{};
 
-		// Game Actors
+		// Scene actors
 		kt::Text::TextEntity m_movingText{ m_font };
 		kt::Text::TextEntity m_cornerText{ m_font };
 		kt::Shapes::CircleEntity m_circle{};
 		kt::Shapes::RectangleEntity m_rectangle{};
 
-		// Static geometry
+		// Scene geometry
 		sf::RectangleShape m_centerVerticalLine{};
 		sf::RectangleShape m_centerHorizontalLine{};
 
+		// UI elements
+		sf::Texture m_lagTexture{};
+		sf::Sprite m_lagSprite{ m_lagTexture };
+
 		// Helper containers
 		std::vector<sf::Drawable*> m_drawableObjects = {
+			// Scene geometry
 			&m_rectangle,
 			&m_centerVerticalLine,
 			&m_centerHorizontalLine,
+
+			// Scene actors
 			&m_circle,
 			&m_movingText,
 			&m_cornerText,
+
+			// UI elements
+			& m_lagSprite,
 		};
 
 		// Time tracking
 		kt::Utils::Frametime m_Time{};
 
 		// Key-press tracking
-		bool m_isKeyFrictionPressed = false;
-		bool m_isKeyLagSpikePressed = false;
+		bool m_isKeyFrictionPressed{ false };
+		bool m_isKeyLagSpikePressed{ false };
 
 		// Debugging features
-		const float m_lagSeconds = kt::Globals::LAG_SPIKE_TIME_SECONDS;
-		float m_secondsCounter = 0.0f;
-		bool m_isFrictionEnabled = true;
-		bool m_isLagSpikeEnabled = false;
+		const float m_lagSeconds{ kt::Globals::LAG_SPIKE_TIME_SECONDS };
+		float m_secondsCounter{ 0.0f };
+		bool m_isFrictionEnabled{ true };
+		bool m_isLagSpikeEnabled{ false };
 
 		std::string m_averageFPSText;
 
@@ -91,9 +105,10 @@ namespace kt::Core {
 		void handleObjectMovement();
 		void handleObjectOutOfBounds();
 		void handleUI();
+		void handleSimulationState();
 		void handleObjectState();
 		
-		// Primary functions
+		// Internal functions
 		void handleInput();
 		void update();
 		void drawScreen();
@@ -101,9 +116,12 @@ namespace kt::Core {
 		void trackFPS();
 	public:
 		CoreSimulation();
+
+		// Primary functions
 		bool initialize();
 		bool run();
 		bool exitSimulation();
+
 		virtual ~CoreSimulation();
 	};
 }
