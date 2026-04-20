@@ -48,9 +48,6 @@ namespace kt::Core {
 		sf::RenderWindow m_window{};
 		sf::Color backgroundColor{};
 
-		// Simulation tick rate
-		const float tickRate{ 60.0f };
-
 		// Necessary objects for actors
 		sf::Font m_font{};
 
@@ -93,11 +90,10 @@ namespace kt::Core {
 
 		// Debugging features
 		const float m_lagSeconds{ kt::Globals::LAG_SPIKE_TIME_SECONDS };
-		float m_secondsCounter{ 0.0f };
 		bool m_isFrictionEnabled{ true };
 		bool m_isLagSpikeEnabled{ false };
 
-		std::string m_averageFPSText;
+		std::string m_averageFPSText{};
 
 		// Helper functions
 		void handleKeyboardInput();

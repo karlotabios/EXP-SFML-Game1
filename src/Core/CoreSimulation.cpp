@@ -67,32 +67,39 @@ namespace kt::Core {
 		m_centerHorizontalLine.setSize(sf::Vector2f{ kt::Globals::WINDOW_WIDTH, 1.0f });
 
 		//Initialize deltaTime
-		m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.elapsedTime.asSeconds()));
-
+		// m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.elapsedTime.asSeconds()));
+		m_Time.deltaTime = sf::seconds(kt::Globals::TIMESTEP);
 		return true;
 	}
 
 	bool CoreSimulation::run() {
 		while (m_window.isOpen()) {
-			// Checking for window events
-			while (const std::optional event = m_window.pollEvent()) {
-				if (event->is<sf::Event::Closed>()) m_window.close();
+			m_Time.secondsAccumulator += m_Time.clock.getElapsedTime().asSeconds() - m_Time.realTime.asSeconds();
+
+			m_Time.realTime = m_Time.clock.getElapsedTime();
+
+			while (m_Time.secondsAccumulator >= m_Time.deltaTime.asSeconds()) {
+				// Checking for window events
+				while (const std::optional event = m_window.pollEvent()) {
+					if (event->is<sf::Event::Closed>()) m_window.close();
+				}
+
+				// Handle input
+				this->handleInput();
+
+				// Update
+				this->update();
+
+				// Draw
+				this->drawScreen();
+
+				// Handle update and display frame rate
+				// this->capUPS();
+				this->trackFPS();
+				std::system("cls");
+
+				m_Time.secondsAccumulator -= m_Time.deltaTime.asSeconds();
 			}
-
-			// Handle input
-			this->handleInput();
-			
-			// Update
-			this->update();
-
-			// Draw
-			this->drawScreen();
-
-			// Handle update and display frame rate
-			this->capUPS();
-			this->trackFPS();
-
-			std::system("cls");
 		}
 		return true;
 	}
@@ -120,6 +127,14 @@ namespace kt::Core {
 		// Clearing old frame from display
 		m_window.clear(backgroundColor);
 
+		if (m_isLagSpikeEnabled) {
+			sf::sleep(sf::seconds(m_lagSeconds));
+			m_lagSprite.setScale({ 0.2f, 0.2f });
+		}
+		else {
+			m_lagSprite.setScale({ 0.0f, 0.0f });
+		}
+
 		// Draw objects
 		for (auto& object : m_drawableObjects) {
 			m_window.draw(*object);
@@ -130,14 +145,10 @@ namespace kt::Core {
 	}
 
 	void CoreSimulation::capUPS() {
-		if (m_isLagSpikeEnabled) {
-			sf::sleep(sf::seconds(m_lagSeconds));
-		}
-
 		// Restarting time counter for FPS
-		m_Time.elapsedTime = m_Time.clock.restart();
-		sf::Time sleepTime = sf::seconds(kt::Globals::TIMESTEP) - m_Time.elapsedTime;
-		m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.elapsedTime.asSeconds()));
+		m_Time.realTime = m_Time.clock.restart();
+		sf::Time sleepTime = sf::seconds(kt::Globals::TIMESTEP) - m_Time.realTime;
+		m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.realTime.asSeconds()));
 
 		if (sleepTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
 		{
@@ -148,15 +159,16 @@ namespace kt::Core {
 	void CoreSimulation::trackFPS() {
 		// Increment frame counter
 		m_Time.frameCounter++;
-		m_secondsCounter += m_Time.deltaTime.asSeconds();
-		m_Time.totalTime += m_Time.deltaTime;
-		if (m_secondsCounter >= 1) {
+
+		// Add into time tracker within simulation
+		m_Time.fpsDisplayAccumulator += m_Time.deltaTime.asSeconds();
+		if (m_Time.fpsDisplayAccumulator >= 1) {
 			std::ostringstream oss;
-			oss << m_Time.frameCounter / m_Time.totalTime.asSeconds();
+			oss << m_Time.frameCounter / m_Time.realTime.asSeconds();
 			m_averageFPSText = oss.str();
-			m_secondsCounter = 0;
+			m_Time.fpsDisplayAccumulator = 0;
 		}
-		std::cout << "[INFO] Total simulation seconds: " << m_Time.totalTime.asSeconds() << std::endl;
+		std::cout << "[INFO] Total simulation seconds: " << m_Time.realTime.asSeconds() << std::endl;
 		std::cout << "[INFO] Frame count: " << m_Time.frameCounter << std::endl;
 		std::cout << "[INFO] Average FPS: " << m_averageFPSText << std::endl;
 
@@ -223,12 +235,6 @@ namespace kt::Core {
 				}
 			}
 		}
-
-		std::string message;
-		message = m_isLagSpikeEnabled ? "[INFO] Lag Spike Enabled" : "[INFO] Lag Spike Disabled";
-		std::cout << message << std::endl;
-		message = m_isFrictionEnabled ? "[INFO] Enabled Friction!" : "[INFO] Disabled Friction!";
-		std::cout << message << std::endl;
 
 		if (isMoveKeyPressed) {
 			m_circle.addForce(appliedForce);
@@ -322,13 +328,6 @@ namespace kt::Core {
 		}
 		else {
 			backgroundColor = sf::Color(10U, 30U, 60U, 255U);
-		}
-
-		if (m_isLagSpikeEnabled) {
-			m_lagSprite.setScale({ 0.2f, 0.2f });
-		}
-		else {
-			m_lagSprite.setScale({ 0.0f, 0.0f });
 		}
 
 		return;
