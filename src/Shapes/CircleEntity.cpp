@@ -9,6 +9,7 @@ namespace kt::Shapes {
 		setFillColor(sf::Color::Red);
 		setOutlineColor(sf::Color::Red);
 		setOutlineThickness(1.0f);
+
 	}
 
 	void CircleEntity::move(const sf::Time& deltaTime, bool isFrictionEnabled) {
@@ -30,11 +31,9 @@ namespace kt::Shapes {
 
 		if (velocity.length() == 0) {
 			m_isMoving = false;
-			std::cout << "[INFO/isMoving] m_isMoving = false; m_isMoving ==> " << m_isMoving << std::endl;
 		}
 		else {
 			m_isMoving = true;
-			std::cout << "[INFO/isMoving] m_isMoving = true; m_isMoving ==> " << m_isMoving << std::endl;
 		}
 
 		sf::Vector2f frictionForce{};
@@ -49,12 +48,9 @@ namespace kt::Shapes {
 			const float kineticFrictionMagnitude = kt::Globals::KINETIC_FRICTION_COEF * normalForceMagnitude;
 
 			if (m_isMoving) {
-				std::cout << "[INFO/kinetic friction] Circle is moving, kinetic friction here!" << std::endl;
 				frictionDirection = -velocity.normalized();
 				frictionForce = kineticFrictionMagnitude * frictionDirection;
 				sf::Vector2f frictionAcceleration = frictionForce / mass;
-				std::cout << "[INFO/kinetic friction] velocity.length() ==> " << velocity.length() << std::endl;
-				std::cout << "[INFO/kinetic friction] frictionAcceleration.length() ==> " << frictionAcceleration.length() << std::endl;
 				if (velocity.length() <= (frictionAcceleration.length() * deltaTime.asSeconds())) {
 					velocity = { 0.0f, 0.0f };
 				}
@@ -64,43 +60,20 @@ namespace kt::Shapes {
 			}
 			else {
 				if (netForce.length() != 0) {
-					std::cout << "[INFO/static friction] netForce.length() is non-zero!" << std::endl;
 					frictionDirection = -netForce.normalized();
-					std::cout << "[INFO/static friction] frictionDirection.normalized().x ==> " << frictionDirection.normalized().x << std::endl;
-					std::cout << "[INFO/static friction] frictionDirection.normalized().y ==> " << frictionDirection.normalized().y << std::endl;
 				}
 				frictionForce = staticFrictionMagnitude * frictionDirection;
 
 				if (netForce.length() <= staticFrictionMagnitude) {
-					std::cout << "[INFO/static friction] Can't escape static friction!" << std::endl;
-					std::cout << "[INFO/static friction] netForce.length() ==> " << netForce.length() << std::endl;
-					std::cout << "[INFO/static friction] staticFrictionMagnitude ==> " << staticFrictionMagnitude << std::endl;
 					netForce = { 0.0f, 0.0f };
 				}
 				else {
-					std::cout << "[INFO/static friction] Circle escaped static friction!" << std::endl;
-					std::cout << "[INFO/static friction] netForce.length() ==> " << netForce.length() << std::endl;
-					std::cout << "[INFO/static friction] staticFrictionMagnitude ==> " << staticFrictionMagnitude << std::endl;
-					std::cout << "[INFO/static friction] frictionForce.normalized().x ==> " << frictionForce.normalized().x << std::endl;
-					std::cout << "[INFO/static friction] frictionForce.normalized().y ==> " << frictionForce.normalized().y << std::endl;
 					netForce -= frictionForce;
 				}
 			}
 		}
 
-		if (netForce.length() != 0)	{
-			std::cout << "[INFO/Net Force] netForce.length() is non-zero!" << std::endl;
-			std::cout << "[INFO/Net Force] netForce.length() ==> " << netForce.length() << std::endl;
-			std::cout << "[INFO/Net Force] netForce.normalized().x ==> " << netForce.normalized().x << std::endl;
-			std::cout << "[INFO/Net Force] netForce.normalized().y ==> " << netForce.normalized().y << std::endl;
-		}
-		else {
-			std::cout << "[INFO/Net Force] netForce.length() is zero!" << std::endl;
-		}
-		
 		acceleration += (netForce / mass);
-		std::cout << "[INFO/acceleration] acceleration.x ==> " << acceleration.x << std::endl;
-		std::cout << "[INFO/acceleration] acceleration.y ==> " << acceleration.y << std::endl;
 
 		// kinematics equation:
 		// x_f = x_0 + (v_0 * t) + ((a * t^2) / 2)
@@ -109,12 +82,6 @@ namespace kt::Shapes {
 		// kinematics equation:
 		// v_f = v_0 + at
 		velocity = velocity + (acceleration * deltaTime.asSeconds());
-
-		if (velocity.length() != 0) {
-			std::cout << "[INFO/velocity] velocity.normalized();" << std::endl;
-			std::cout << "[INFO/velocity] velocity.normalized().x ==> " << velocity.normalized().x << std::endl;
-			std::cout << "[INFO/velocity] velocity.normalized().y ==> " << velocity.normalized().y << std::endl;
-		}
 
 		this->setVelocity(velocity);
 		this->setPosition(position);
