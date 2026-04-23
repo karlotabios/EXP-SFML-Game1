@@ -1,6 +1,9 @@
 #include "../Globals/defaults.h"
+#include "../Utils/print.h"
 
 #include "CircleEntity.h"
+#include <algorithm>
+#include <iostream>
 
 namespace kt::Shapes {
 	CircleEntity::CircleEntity() : CircleShape() {
@@ -9,6 +12,9 @@ namespace kt::Shapes {
 		setFillColor(sf::Color::Red);
 		setOutlineColor(sf::Color::Red);
 		setOutlineThickness(1.0f);
+
+		// Temporary initial velocity
+		addForce(sf::Vector2f{ 100000.0f, -100000.0f });
 	}
 
 	void CircleEntity::move(const sf::Time& deltaTime, bool isFrictionEnabled) {

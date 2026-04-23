@@ -2,9 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 
-// std::clamp
-#include <algorithm>
-
 namespace kt::Globals {
 	static constexpr unsigned int ANTI_ALIASING_LEVEL = 8;
 	static constexpr float FPS = 60.0f;
