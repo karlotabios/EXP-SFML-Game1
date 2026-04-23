@@ -1,6 +1,8 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <iostream>
+#include <algorithm>
 #include "../Physical/Movable.h"
 
 namespace kt::Shapes {

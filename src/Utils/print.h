@@ -3,13 +3,11 @@
 #include <string>
 
 namespace kt::Utils {
-	template<typename... T>
-	void printLog(const std::string& message, const T&... args) {
-		static_assert(((std::is_arithmetic_v<T> || std::is_same_v<T, bool> || std::is_same_v<T, std::string>) && ...), "Cannot print non-arithmetic, non-boolean types, or non-standard library string types");
+	template <typename T>
+	void printLog(const std::string& message, const T& variable) {
+		static_assert(std::is_arithmetic_v<T>, "Cannot print non-arithmetic type");
 
-		std::cout << message;
-
-		(std::cout << ... << args) << "\n";
+		std::cout << message << variable << "\n";
 
 		return;
 	}

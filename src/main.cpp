@@ -5,7 +5,10 @@
 
 int main() {
 	kt::Core::CoreSimulation Game;
-	Game.run();
+	bool gameInitialized = Game.initialize();
+	if (gameInitialized) {
+		Game.run();
+	}
 	Game.exitSimulation();
 	return 0;
 }

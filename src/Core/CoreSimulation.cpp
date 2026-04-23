@@ -1,9 +1,9 @@
 #include "CoreSimulation.h"
 
-#include "../Utils/print.h"
-
 namespace kt::Core {
-	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_DIR) {
+	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_DIR) {};
+
+	bool CoreSimulation::initialize() {
 		sf::ContextSettings settings{};
 		settings.antiAliasingLevel = kt::Globals::ANTI_ALIASING_LEVEL;
 
@@ -11,15 +11,17 @@ namespace kt::Core {
 
 		std::default_random_engine rng;
 		std::uniform_real_distribution<double> rngDistribution(1, kt::Globals::WINDOW_HEIGHT);
-
+		
 		// Getting font from file
 		if (!m_font.openFromFile(kt::Globals::FONT_DIR)) {
-			std::cerr << "ERROR: Font not found at path " << kt::Globals::FONT_DIR << "\n";
+			std::cout << "ERROR: Font not found at path " << kt::Globals::FONT_DIR << "\n";
+			return false;
 		}
 
 		//Initialize UI Icon
 		if (!m_lagTexture.loadFromFile(kt::Globals::LAG_IMAGE_DIR)) {
-			std::cerr << "ERROR: Image file not found at path " << kt::Globals::LAG_IMAGE_DIR << "\n";
+			std::cout << "ERROR: Image file not found at path " << kt::Globals::LAG_IMAGE_DIR << "\n";
+			return false;
 		}
 		else {
 			m_lagSprite.setTexture(m_lagTexture);
@@ -65,52 +67,32 @@ namespace kt::Core {
 		m_centerHorizontalLine.setSize(sf::Vector2f{ kt::Globals::WINDOW_WIDTH, 1.0f });
 
 		//Initialize deltaTime
-		m_Time.deltaTime = sf::seconds(kt::Globals::TIMESTEP);
-	
-	};
+		m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.elapsedTime.asSeconds()));
 
-	bool CoreSimulation::initialize() {
-		return true;	// TODO: Remove this function altogether
+		return true;
 	}
 
 	bool CoreSimulation::run() {
-		bool didSimulationPlay = false;
-
-
-
 		while (m_window.isOpen()) {
 			// Checking for window events
 			while (const std::optional event = m_window.pollEvent()) {
 				if (event->is<sf::Event::Closed>()) m_window.close();
 			}
 
-			m_Time.secondsAccumulator += m_Time.clock.getElapsedTime().asSeconds();
+			// Handle input
+			this->handleInput();
+			
+			// Update
+			this->update();
 
-			const float fixedFrameSeconds = m_Time.deltaTime.asSeconds();
-			while (m_Time.secondsAccumulator >= fixedFrameSeconds) {
-				m_Time.secondsAccumulator -= fixedFrameSeconds;
+			// Draw
+			this->drawScreen();
 
-				// Handle input
-				this->handleInput();
+			// Handle update and display frame rate
+			this->capUPS();
+			this->trackFPS();
 
-				// Update
-				this->update();
-
-				// Draw
-				this->drawScreen();
-
-				// Handle update and display frame rate
-				// this->capUPS();
-				this->trackFPS();
-
-				std::system("cls");
-
-				didSimulationPlay = true;
-			}
-			if (didSimulationPlay) {
-				m_Time.clock.restart();
-				didSimulationPlay = false;
-			}
+			std::system("cls");
 		}
 		return true;
 	}
@@ -153,9 +135,9 @@ namespace kt::Core {
 		}
 
 		// Restarting time counter for FPS
-		m_Time.simulationTime = m_Time.clock.restart();
-		sf::Time sleepTime = sf::seconds(kt::Globals::TIMESTEP) - m_Time.simulationTime;
-		m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.simulationTime.asSeconds()));
+		m_Time.elapsedTime = m_Time.clock.restart();
+		sf::Time sleepTime = sf::seconds(kt::Globals::TIMESTEP) - m_Time.elapsedTime;
+		m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.elapsedTime.asSeconds()));
 
 		if (sleepTime.asSeconds() > 0)	// here, if the tick speed of the game is faster than prescribed (1/FPS, which should be 0.016s if 60 FPS is the cap) then the game calls sleep for the duration of the excess time.
 		{
@@ -166,17 +148,17 @@ namespace kt::Core {
 	void CoreSimulation::trackFPS() {
 		// Increment frame counter
 		m_Time.frameCounter++;
-		m_Time.fpsDisplayAccumulator += m_Time.deltaTime.asSeconds();
-		m_Time.realTime = m_Time.clock.getElapsedTime();
-		if (m_Time.fpsDisplayAccumulator >= 1) {
+		m_secondsCounter += m_Time.deltaTime.asSeconds();
+		m_Time.totalTime += m_Time.deltaTime;
+		if (m_secondsCounter >= 1) {
 			std::ostringstream oss;
-			oss << m_Time.frameCounter / m_Time.realTime.asSeconds();
+			oss << m_Time.frameCounter / m_Time.totalTime.asSeconds();
 			m_averageFPSText = oss.str();
-			m_Time.fpsDisplayAccumulator = 0;
+			m_secondsCounter = 0;
 		}
-		std::cout << "[INFO] Total simulation seconds: " << m_Time.realTime.asSeconds() << "\n";
-		std::cout << "[INFO] Frame count: " << m_Time.frameCounter << "\n";
-		std::cout << "[INFO] Average FPS: " << m_averageFPSText << "\n";
+		std::cout << "[INFO] Total simulation seconds: " << m_Time.totalTime.asSeconds() << std::endl;
+		std::cout << "[INFO] Frame count: " << m_Time.frameCounter << std::endl;
+		std::cout << "[INFO] Average FPS: " << m_averageFPSText << std::endl;
 
 		return;
 	}
@@ -244,9 +226,9 @@ namespace kt::Core {
 
 		std::string message;
 		message = m_isLagSpikeEnabled ? "[INFO] Lag Spike Enabled" : "[INFO] Lag Spike Disabled";
-		std::cout << message << "\n";
+		std::cout << message << std::endl;
 		message = m_isFrictionEnabled ? "[INFO] Enabled Friction!" : "[INFO] Disabled Friction!";
-		std::cout << message << "\n";
+		std::cout << message << std::endl;
 
 		if (isMoveKeyPressed) {
 			m_circle.addForce(appliedForce);
@@ -358,6 +340,7 @@ namespace kt::Core {
 		if (collisionData != std::nullopt) {
 			m_circle.makeTransparent();
 			sf::Vector2f positionDelta = collisionData->collisionNormalDirection * collisionData->overlapMagnitude;
+			sf::Vector2f oldPosition = m_circle.getPosition();
 			sf::Vector2f newPosition = m_circle.getPosition() + positionDelta;
 			m_circle.setVelocity({ 0.0f,0.0f });	// Temporary workaround
 			m_circle.setPosition(newPosition);

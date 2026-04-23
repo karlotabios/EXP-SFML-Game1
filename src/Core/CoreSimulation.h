@@ -93,6 +93,7 @@ namespace kt::Core {
 
 		// Debugging features
 		const float m_lagSeconds{ kt::Globals::LAG_SPIKE_TIME_SECONDS };
+		float m_secondsCounter{ 0.0f };
 		bool m_isFrictionEnabled{ true };
 		bool m_isLagSpikeEnabled{ false };
 
