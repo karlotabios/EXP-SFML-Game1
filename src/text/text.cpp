@@ -1,7 +1,7 @@
 #include "Text.h"
 
 namespace kt::Text {
-	TextEntity::TextEntity(const sf::Font& font) : public sf::Text(font) {};
+	TextEntity::TextEntity(const sf::Font& font) : sf::Text(font) {};
 
 	sf::Vector2f TextEntity::getVelocity() const {
 		return m_velocity;
