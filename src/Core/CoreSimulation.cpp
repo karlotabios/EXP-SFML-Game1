@@ -153,10 +153,9 @@ namespace kt::Core {
 		m_Time.frameCounter++;
 		m_secondsCounter += m_Time.deltaTime.asSeconds();
 		m_Time.totalTime += m_Time.deltaTime;
-		float fpsOverTime = 0;
+		float fpsOverTime = m_Time.frameCounter / m_Time.totalTime.asSeconds();
 		if (m_secondsCounter >= 1) {
 			std::ostringstream oss;
-			fpsOverTime = m_Time.frameCounter / m_Time.totalTime.asSeconds();
 			oss << fpsOverTime;
 			m_averageFPSText = oss.str();
 			m_secondsCounter = 0;
@@ -166,7 +165,7 @@ namespace kt::Core {
 		std::cout << "[INFO] Average FPS: " << m_averageFPSText << std::endl;
 
 		try {
-			if ((m_secondsCounter == 0) && (fpsOverTime > kt::Globals::FPS - 20.0f)) {
+			if ((m_secondsCounter == 0) && (fpsOverTime > kt::Globals::FPS)) {
 				throw kt::Utils::SimulationException("Simulation is running beyond FPS cap " + std::to_string(kt::Globals::FPS) + ", running at " + std::to_string(fpsOverTime));
 			}
 		}
