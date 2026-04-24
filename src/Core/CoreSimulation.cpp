@@ -1,5 +1,7 @@
 #include "CoreSimulation.h"
 
+#include "../Utils/SimulationExceptions.h"
+
 namespace kt::Core {
 	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_DIR) {};
 
@@ -143,6 +145,7 @@ namespace kt::Core {
 		{
 			sf::sleep(sleepTime);
 		}
+
 	}
 
 	void CoreSimulation::trackFPS() {
@@ -150,15 +153,28 @@ namespace kt::Core {
 		m_Time.frameCounter++;
 		m_secondsCounter += m_Time.deltaTime.asSeconds();
 		m_Time.totalTime += m_Time.deltaTime;
+		float fpsOverTime = 0;
 		if (m_secondsCounter >= 1) {
 			std::ostringstream oss;
-			oss << m_Time.frameCounter / m_Time.totalTime.asSeconds();
+			fpsOverTime = m_Time.frameCounter / m_Time.totalTime.asSeconds();
+			oss << fpsOverTime;
 			m_averageFPSText = oss.str();
 			m_secondsCounter = 0;
 		}
 		std::cout << "[INFO] Total simulation seconds: " << m_Time.totalTime.asSeconds() << std::endl;
 		std::cout << "[INFO] Frame count: " << m_Time.frameCounter << std::endl;
 		std::cout << "[INFO] Average FPS: " << m_averageFPSText << std::endl;
+
+		try {
+			if ((m_secondsCounter == 0) && (fpsOverTime > kt::Globals::FPS - 20.0f)) {
+				throw kt::Utils::SimulationException("Simulation is running beyond FPS cap " + std::to_string(kt::Globals::FPS) + ", running at " + std::to_string(fpsOverTime));
+			}
+		}
+		catch (const std::exception& e) {
+			std::cerr << "File: " << __FILE__ << ", line: " << __LINE__ << ", Exception caught: " << e.what() << "\n";
+			std::terminate();
+			// TODO: create Expect() utility function that takes in how to handle exception (i.e. terminate, continue, log)
+		}
 
 		return;
 	}
