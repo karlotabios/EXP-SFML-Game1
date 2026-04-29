@@ -3,7 +3,7 @@
 #include "../Utils/SimulationExceptions.h"
 
 namespace kt::Core {
-	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_DIR) {};
+	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_FILE_PATH) {};
 
 	bool CoreSimulation::initialize() {
 		sf::ContextSettings settings{};
@@ -13,16 +13,16 @@ namespace kt::Core {
 
 		std::default_random_engine rng;
 		std::uniform_real_distribution<double> rngDistribution(1, kt::Globals::WINDOW_HEIGHT);
-		
+
 		// Getting font from file
-		if (!m_font.openFromFile(kt::Globals::FONT_DIR)) {
-			std::cout << "ERROR: Font not found at path " << kt::Globals::FONT_DIR << "\n";
+		if (!m_font.openFromFile(kt::Globals::FONT_FILE_PATH)) {
+			std::cout << "ERROR: Font not found at path " << kt::Globals::FONT_FILE_PATH << "\n";
 			return false;
 		}
 
 		//Initialize UI Icon
-		if (!m_lagTexture.loadFromFile(kt::Globals::LAG_IMAGE_DIR)) {
-			std::cout << "ERROR: Image file not found at path " << kt::Globals::LAG_IMAGE_DIR << "\n";
+		if (!m_lagTexture.loadFromFile(kt::Globals::LAG_IMAGE_FILE_PATH)) {
+			std::cout << "ERROR: Image file not found at path " << kt::Globals::LAG_IMAGE_FILE_PATH << "\n";
 			return false;
 		}
 		else {
