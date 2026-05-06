@@ -2,6 +2,8 @@
 
 #include "../Utils/SimulationExceptions.h"
 
+#include "../Utils/print.h"
+
 namespace kt::Core {
 	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_FILE_PATH) {};
 
@@ -166,13 +168,12 @@ namespace kt::Core {
 
 		try {
 			if ((m_secondsCounter == 0) && (fpsOverTime > kt::Globals::FPS)) {
-				throw kt::Utils::SimulationException("Simulation is running beyond FPS cap " + std::to_string(kt::Globals::FPS) + ", running at " + std::to_string(fpsOverTime));
+				throw kt::Utils::SimulationException("Simulation is running beyond FPS cap " + std::to_string(kt::Globals::FPS) + ", running at " + std::to_string(fpsOverTime), m_Time);
 			}
 		}
 		catch (const std::exception& e) {
-			std::cerr << "File: " << __FILE__ << ", line: " << __LINE__ << ", Exception caught: " << e.what() << "\n";
+			kt::Utils::printException(e);
 			std::terminate();
-			// TODO: create Expect() utility function that takes in how to handle exception (i.e. terminate, continue, log)
 		}
 
 		return;

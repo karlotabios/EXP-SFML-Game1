@@ -2,6 +2,7 @@
 
 #include <string>
 
+
 namespace kt::Utils {
 	template<typename... T>
 	inline void printLog(const std::string& message, const T&... args) {
@@ -18,5 +19,5 @@ namespace kt::Utils {
 
 	void printLog(const std::string&);
 
-	void printException(const std::exception&);
+	void printException(const std::exception&) noexcept;
 }

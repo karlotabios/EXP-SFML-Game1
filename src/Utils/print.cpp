@@ -2,7 +2,6 @@
 #include "../Globals/color.h"
 
 #include <iostream>
-#include <type_traits>
 
 namespace kt::Utils {
 	void printLog(const std::string& message) {
@@ -11,8 +10,8 @@ namespace kt::Utils {
 		return;
 	}
 
-	void printException(const std::exception& e) {
-		std::cerr << "Exception caught: " << e.what() << "\n";
+	void printException(const std::exception& e) noexcept {
+		std::cerr << kt::Globals::LOG_RED_COLOR << "[EXCEPTION] Exception caught: " << e.what() << "\n" << kt::Globals::LOG_DEFAULT_COLOR;
 
 		return;
 	}
