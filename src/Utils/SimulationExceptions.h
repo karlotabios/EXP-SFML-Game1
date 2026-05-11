@@ -14,7 +14,8 @@ namespace kt::Utils {
 
 	public:
 		SimulationException() = delete;
-		SimulationException(const std::string&, const Frametime&);
+		SimulationException(const Frametime&, const std::string& _message = "Unknown simulation exception");
+		SimulationException(const SimulationException&) = default;
 
 		const char* what() const noexcept override;
 		const Frametime& getFrametime() const noexcept;
