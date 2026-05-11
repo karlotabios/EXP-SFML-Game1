@@ -1,8 +1,16 @@
 #include "CoreSimulation.h"
 
+// kt::Utils::SimulationException Class
 #include "../Utils/SimulationExceptions.h"
 
+// kt::Utils::printException()
 #include "../Utils/print.h"
+
+// kt::Utils::expect()
+#include "../Utils/expect.h"
+
+// Testing C++ features
+#include "../Test/test.h"
 
 namespace kt::Core {
 	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_FILE_PATH) {};
@@ -167,8 +175,11 @@ namespace kt::Core {
 		std::cout << "[INFO] Average FPS: " << m_averageFPSText << std::endl;
 
 		try {
-			if ((m_secondsCounter == 0) && (fpsOverTime > kt::Globals::FPS)) {
-				throw kt::Utils::SimulationException("Simulation is running beyond FPS cap " + std::to_string(kt::Globals::FPS) + ", running at " + std::to_string(fpsOverTime), m_Time);
+			if (m_secondsCounter == 0) {
+				kt::Utils::expect(
+					[&] { return (fpsOverTime < kt::Globals::FPS); }, 
+					kt::Utils::SimulationException(m_Time, "Simulation is running beyond FPS cap " + std::to_string(kt::Globals::FPS) + ", running at " + std::to_string(fpsOverTime))
+				);
 			}
 		}
 		catch (const std::exception& e) {
