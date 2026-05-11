@@ -15,7 +15,7 @@ namespace kt::Utils {
 		return;
 	}
 
-	// void printLog(const std::string&, const float&);
+	void printError(const std::string&);
 
 	void printLog(const std::string&);
 
