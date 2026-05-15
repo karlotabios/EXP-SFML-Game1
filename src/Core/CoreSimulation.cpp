@@ -178,7 +178,17 @@ namespace kt::Core {
 			if (m_secondsCounter == 0) {
 				kt::Utils::expect(
 					[&] { return (fpsOverTime < kt::Globals::FPS); }, 
-					kt::Utils::SimulationException(m_Time, "Simulation is running beyond FPS cap " + std::to_string(kt::Globals::FPS) + ", running at " + std::to_string(fpsOverTime))
+					kt::Utils::SimulationException(
+						kt::Utils::SimulationException::ErrorSite{
+							__LINE__,
+							__FILE__
+						},
+						m_Time, 
+						"Simulation is running beyond FPS cap " 
+							+ std::to_string(kt::Globals::FPS) 
+							+ ", running at " 
+							+ std::to_string(fpsOverTime)
+					)
 				);
 			}
 		}
