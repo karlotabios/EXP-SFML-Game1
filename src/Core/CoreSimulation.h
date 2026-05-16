@@ -118,7 +118,6 @@ namespace kt::Core {
 		CoreSimulation();
 
 		// Primary functions
-		bool initialize();
 		bool run();
 		bool exitSimulation();
 
