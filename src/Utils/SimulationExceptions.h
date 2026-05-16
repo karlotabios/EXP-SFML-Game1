@@ -9,6 +9,7 @@
 namespace kt::Utils {
 	class SimulationException : public std::exception {
 	private:
+		const std::string m_ExceptionName{"SimulationException"};
 		std::string m_Message{};
 		const Frametime m_frameData{};
 
@@ -25,7 +26,7 @@ namespace kt::Utils {
 		SimulationException(const SimulationException&) = default;
 
 		const char* what() const noexcept override;
-		const Frametime& getFrametime() const noexcept;
+		const std::string getExceptionName() const noexcept;
 
 		virtual ~SimulationException();
 	};

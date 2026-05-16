@@ -38,7 +38,7 @@ namespace kt::Utils {
 		}
 		if constexpr (action == ErrorAction::ActionTerminate) {
 			if (!result) {
-				std::terminate;
+				std::terminate();
 			}
 		}
 

@@ -17,8 +17,8 @@ namespace kt::Utils {
 		return m_Message.c_str();
 	}
 
-	const Frametime& SimulationException::getFrametime() const noexcept {
-		return m_frameData;
+	const std::string SimulationException::getExceptionName() const noexcept {
+		return m_ExceptionName;
 	}
 
 	SimulationException::~SimulationException() {};

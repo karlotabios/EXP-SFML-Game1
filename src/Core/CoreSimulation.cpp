@@ -177,7 +177,7 @@ namespace kt::Core {
 		try {
 			if (m_secondsCounter == 0) {
 				kt::Utils::expect(
-					[&] { return (fpsOverTime < kt::Globals::FPS); }, 
+					[&] { return (fpsOverTime > kt::Globals::FPS); }, 
 					kt::Utils::SimulationException(
 						kt::Utils::SimulationException::ErrorSite{
 							__LINE__,
@@ -191,6 +191,10 @@ namespace kt::Core {
 					)
 				);
 			}
+		}
+		catch (const kt::Utils::SimulationException& e) {
+			kt::Utils::printException(e);
+			std::terminate();
 		}
 		catch (const std::exception& e) {
 			kt::Utils::printException(e);
