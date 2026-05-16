@@ -12,7 +12,7 @@ namespace kt::Test {
 
 	// T requires std::exception or class derived from std::exception
 	template<typename T>
-	void test(T& except) {
+	void REQUIRE_EXCEPTION(T& except) {
 		static_assert(is_std_exception_v<T>, "Argument is not derived from nor a std::exception type");
 		throw except;
 		return;
