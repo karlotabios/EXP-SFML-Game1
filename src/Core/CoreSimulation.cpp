@@ -13,9 +13,7 @@
 #include "../Test/test.h"
 
 namespace kt::Core {
-	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_FILE_PATH) {};
-
-	bool CoreSimulation::initialize() {
+	CoreSimulation::CoreSimulation() : m_lagTexture(kt::Globals::LAG_IMAGE_FILE_PATH) {
 		sf::ContextSettings settings{};
 		settings.antiAliasingLevel = kt::Globals::ANTI_ALIASING_LEVEL;
 
@@ -24,23 +22,33 @@ namespace kt::Core {
 		std::default_random_engine rng;
 		std::uniform_real_distribution<double> rngDistribution(1, kt::Globals::WINDOW_HEIGHT);
 
-		// Getting font from file
-		if (!m_font.openFromFile(kt::Globals::FONT_FILE_PATH)) {
-			std::cout << "ERROR: Font not found at path " << kt::Globals::FONT_FILE_PATH << "\n";
-			return false;
-		}
+		try {
+			// Getting font from file
+			kt::Utils::expect([&] { return m_font.openFromFile(kt::Globals::FONT_FILE_PATH); },
+				kt::Utils::SimulationException(
+					kt::Utils::SimulationException::ErrorSite{ __LINE__, __FILE__ }, m_Time,
+					"Font not found at path " + kt::Globals::FONT_FILE_PATH
+				)
+			);
 
-		//Initialize UI Icon
-		if (!m_lagTexture.loadFromFile(kt::Globals::LAG_IMAGE_FILE_PATH)) {
-			std::cout << "ERROR: Image file not found at path " << kt::Globals::LAG_IMAGE_FILE_PATH << "\n";
-			return false;
+			//Initialize UI Icon
+			kt::Utils::expect([&] { return m_lagTexture.loadFromFile(kt::Globals::LAG_IMAGE_FILE_PATH); },
+				kt::Utils::SimulationException(
+					kt::Utils::SimulationException::ErrorSite{ __LINE__, __FILE__ }, m_Time,
+					"Image file not found at path " + kt::Globals::LAG_IMAGE_FILE_PATH
+				)
+			);
 		}
-		else {
-			m_lagSprite.setTexture(m_lagTexture);
-			m_lagSprite.setScale({ 0.2f, 0.2f });
+		catch (const kt::Utils::SimulationException& e) {
+			kt::Utils::printException(e);
+			std::terminate();
 		}
 
 		m_font.setSmooth(true);
+		
+		m_lagSprite.setTexture(m_lagTexture);
+		m_lagSprite.setScale({ 0.2f, 0.2f });
+
 
 		// Creating text from font
 		m_movingText.setFont(m_font);
@@ -80,8 +88,6 @@ namespace kt::Core {
 
 		//Initialize deltaTime
 		m_Time.deltaTime = sf::seconds(std::max(kt::Globals::TIMESTEP, m_Time.elapsedTime.asSeconds()));
-
-		return true;
 	}
 
 	bool CoreSimulation::run() {
@@ -177,13 +183,9 @@ namespace kt::Core {
 		try {
 			if (m_secondsCounter == 0) {
 				kt::Utils::expect(
-					[&] { return (fpsOverTime > kt::Globals::FPS); }, 
+					[&] { return (fpsOverTime < kt::Globals::FPS); }, 
 					kt::Utils::SimulationException(
-						kt::Utils::SimulationException::ErrorSite{
-							__LINE__,
-							__FILE__
-						},
-						m_Time, 
+						kt::Utils::SimulationException::ErrorSite{ __LINE__, __FILE__ }, m_Time,
 						"Simulation is running beyond FPS cap " 
 							+ std::to_string(kt::Globals::FPS) 
 							+ ", running at " 
