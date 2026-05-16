@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "SimulationExceptions.h"
 
 namespace kt::Utils {
 	template<typename... T>
@@ -20,4 +21,6 @@ namespace kt::Utils {
 	void printLog(const std::string&);
 
 	void printException(const std::exception&) noexcept;
+
+	void printException(const kt::Utils::SimulationException&) noexcept;
 }

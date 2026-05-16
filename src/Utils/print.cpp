@@ -21,4 +21,10 @@ namespace kt::Utils {
 
 		return;
 	}
+
+	void printException(const kt::Utils::SimulationException& e) noexcept {
+		std::cerr << kt::Globals::LOG_RED_COLOR << "[EXCEPTION] " << e.getExceptionName() << " type caught: " << e.what() << kt::Globals::LOG_DEFAULT_COLOR << "\n";
+
+		return;
+	}
 }
